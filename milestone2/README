@@ -16,7 +16,7 @@ Put the employee id to ???.
 Getting movie data
 curl -X GET http://localhost:8080/movies/???
 Put the movie id to ???.
-fdfdfdfdafdfasfavac
+
 Getting rating data
 curl -X GET http://localhost:8080/ratings/???/???
 Put the user id, movie id to ??? sequentially.
