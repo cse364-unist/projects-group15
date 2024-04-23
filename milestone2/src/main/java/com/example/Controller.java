@@ -25,6 +25,7 @@ public class Controller {
     private final RatingDAL ratingDAL;
     private final UserDAL userDAL;
     private final EmployeeDAL employeeDAL;
+    private String currentUserID;
 
     public Controller(MovieRepository movieRepository, RatingRepository ratingRepository, UserRepository userRepository, EmployeeRepository employeeRepository, MovieDAL movieDAL, RatingDAL ratingDAL, UserDAL userDAL, EmployeeDAL employeeDAL) {
         this.movieRepository = movieRepository;
@@ -35,6 +36,7 @@ public class Controller {
         this.ratingDAL = ratingDAL;
         this.userDAL = userDAL;
         this.employeeDAL = employeeDAL;
+        this.currentUserID = "";
     }
     @RequestMapping(value = "/employees", method = RequestMethod.GET)
     public List<Employee> getEmployees() {
@@ -175,4 +177,27 @@ public class Controller {
         else
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationNight());
     }
+
+    // Bookmark function
+    // login
+    @RequestMapping(value = "/users/login/{userId}/{password}", method = RequestMethod.GET)
+    public void setCurrentUserID(@PathVariable String userId, @PathVariable String password) {
+        if (userDAL.checkUserIdExists(userId)) {
+            Optional<User> optUser = userRepository.findById(userId);
+            User user = optUser.get();
+
+            if (Objects.equals(user.getPassword(), password)) {
+                this.currentUserID = userId;
+                System.out.println("Log in successful with ID : " + userId);
+            } else {
+                throw new RuntimeException("Password do not match");
+            }
+        } else {
+            throw new RuntimeException("Invalid Id");
+        }
+    }
+    /*
+    @RequestMapping(value = "users/add/{movieID}", method = RequestMethod.GET)
+    public void 
+    */
 }

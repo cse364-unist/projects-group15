@@ -134,3 +134,5 @@ PUT User
 curl -X PUT http://localhost:8080/users/1 -H 'Content-Type: application/json' -d '{"userId": "1", "gender": "M", "age": "35", "occupation": "11", "zipcode": "12222"}' / good
 curl -X PUT http://localhost:8080/users/2 -H 'Content-Type: application/json' -d '{"userId": "2", "gender": "F", "age": "50", "occupation": "1", "zipcode": "15555"}' / good
 curl -X PUT http://localhost:8080/users/45678 -H 'Content-Type: application/json' -d '{"userId": "15571", "gender": "F", "age": "50", "occupation": "2", "zipcode": "54544"}' / invalid id
+
+
