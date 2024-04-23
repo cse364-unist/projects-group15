@@ -1,6 +1,6 @@
 package com.example;
 
-import java.util.List;
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,5 +16,5 @@ public class Movie {
     @Id private String movieId;
     private String title;
     private String genre;
-    private List<String> keywords;
+    private ArrayList<String> keywords;
 }
