@@ -11,8 +11,8 @@ public class UserProcessor implements ItemProcessor<UserModel, User> {
         final String gender = userModel.gender();
         final String age = userModel.age();
         final String occupation = userModel.occupation();
-        final String userName = null;
-        final String password = "default";
+        final String userName = "default_username";
+        final String password = "default_password";
         final ArrayList<ArrayList<String>> movieList = new ArrayList<>();
 
         final User transformedUser = new User(userId, gender, age, occupation, userName, password, movieList);
