@@ -1,5 +1,7 @@
 package com.example;
 
-public record MovieModel(String movieId, String title, String genre) {
+import java.util.List;
+
+public record MovieModel(String movieId, String title, String genre, List<String> keywords) {
 
 }

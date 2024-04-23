@@ -1,5 +1,7 @@
 package com.example;
 
-public record UserModel(String userId, String gender, String age, String occupation, String zipcode) {
+import java.util.List;
+
+public record UserModel(String userId, String password, String gender, String age, String occupation, String zipcode, List<List<String>> movieList) {
 
 }
