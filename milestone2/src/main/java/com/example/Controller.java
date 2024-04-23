@@ -1,15 +1,21 @@
 package com.example;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/")
 public class Controller {
+    @Autowired
+    private MongoTemplate mongoTemplate;
     private  final MovieRepository movieRepository;
     private  final RatingRepository ratingRepository;
     private final UserRepository userRepository;
@@ -136,8 +142,23 @@ public class Controller {
 
     }
 
-    @RequestMapping(value = "/recommandation/movie/{movieId}", method = RequestMethod.GET)
-    public List<Movie> getRecommandationByMovieId(@PathVariable String MovieId) {
+    @RequestMapping(value = "/recommendation/movie/{movieId}", method = RequestMethod.GET)
+    public List<Movie> getRecommendationByMovieId(@PathVariable String MovieId) {
         return null;
+    }
+
+    @RequestMapping(value = "/recommendation/season", method = RequestMethod.GET)
+    public List<Movie> getRecommendationBySeason() {
+        LocalDate today = LocalDate.now();
+        int monthNumber = today.getMonthValue();
+        List<Rating> ratings;
+        if (monthNumber < 3 || monthNumber == 12)
+            return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationWinter());
+        else if (monthNumber < 6)
+            return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationSpring());
+        else if (monthNumber < 9)
+            return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationSummer());
+        else
+            return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationFall());
     }
 }
