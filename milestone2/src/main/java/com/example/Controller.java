@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 @RestController
@@ -151,7 +152,6 @@ public class Controller {
     public List<Movie> getRecommendationBySeason() {
         LocalDate today = LocalDate.now();
         int monthNumber = today.getMonthValue();
-        List<Rating> ratings;
         if (monthNumber < 3 || monthNumber == 12)
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationWinter());
         else if (monthNumber < 6)
@@ -160,5 +160,19 @@ public class Controller {
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationSummer());
         else
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationFall());
+    }
+
+    @RequestMapping(value = "/recommendation/time", method = RequestMethod.GET)
+    public List<Movie> getRecommendationByTime() {
+        LocalTime now = LocalTime.now();
+        int hourNumber = now.getHour();
+        if (hourNumber <= 5)
+            return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationDawn());
+        else if (hourNumber <= 12)
+            return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationMorning());
+        else if (hourNumber <= 18)
+            return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationAfternoon());
+        else
+            return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationNight());
     }
 }
