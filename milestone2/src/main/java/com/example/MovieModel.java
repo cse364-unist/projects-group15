@@ -2,6 +2,6 @@ package com.example;
 
 import java.util.List;
 
-public record MovieModel(String movieId, String title, String genre, List<String> keywords) {
+public record MovieModel(String movieId, String title, String genre) {
 
 }

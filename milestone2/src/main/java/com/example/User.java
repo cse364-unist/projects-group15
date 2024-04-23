@@ -13,9 +13,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "users")
 public class User {
     @Id private String userId;
-    private String password;
     private String gender;
     private String age;
     private String occupation;
+    private String userName;
+    private String password;
     private List<List<String>> movieList;
 }
