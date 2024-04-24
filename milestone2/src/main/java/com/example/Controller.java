@@ -303,4 +303,19 @@ public class Controller {
             throw new RuntimeException("invalid user");
         }
     }
+
+    @RequestMapping(value = "/users/movielist/{userId}/{listname}/{index}", method = RequestMethod.PUT)
+    public User removeElementFromMovieList(@PathVariable String userId, @PathVariable String listname, @PathVariable String index) {
+        if (userDAL.checkUserIdExists(userId)) {
+            int intIndex = Integer.parseInt(index);
+            User updateUser = userRepository.findById(userId).get();
+            HashMap<String, List<String>> updateList = updateUser.getMovieList();
+            List<String> tempList = updateList.get(listname);
+            tempList.remove(intIndex);
+            userRepository.save(updateUser);
+            return updateUser;
+        } else {
+            throw new RuntimeException("invalid user");
+        }
+    }
 }
