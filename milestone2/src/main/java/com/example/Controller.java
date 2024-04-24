@@ -20,14 +20,15 @@ import javax.management.RuntimeErrorException;
 public class Controller {
     @Autowired
     private MongoTemplate mongoTemplate;
-    private  final MovieRepository movieRepository;
-    private  final RatingRepository ratingRepository;
+    private final MovieRepository movieRepository;
+    private final RatingRepository ratingRepository;
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
     private final MovieDAL movieDAL;
     private final RatingDAL ratingDAL;
     private final UserDAL userDAL;
     private final EmployeeDAL employeeDAL;
+    private String currentUserID;
 
     public Controller(MovieRepository movieRepository, RatingRepository ratingRepository, UserRepository userRepository, EmployeeRepository employeeRepository, MovieDAL movieDAL, RatingDAL ratingDAL, UserDAL userDAL, EmployeeDAL employeeDAL) {
         this.movieRepository = movieRepository;
@@ -147,8 +148,22 @@ public class Controller {
     }
 
     @RequestMapping(value = "/recommendation/movie/{movieId}", method = RequestMethod.GET)
-    public List<Movie> getRecommendationByMovieId(@PathVariable String MovieId) {
-        return null;
+    public List<Movie> getRecommendationByMovieId(@PathVariable String movieId) {
+        HashMap<String, Integer> counter = new HashMap<>();
+        for (Set<String> s : associations) {
+            if (s.contains(movieId)) {
+                for (String e : s) {
+                    counter.put(e, counter.getOrDefault(e, 0) + 1);
+                }
+            }
+        }
+        return movieDAL.getMovieInfosByMovieId(counter.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .skip(1)
+                .limit(20)
+                .toList()
+        );
     }
 
     @RequestMapping(value = "/recommendation/season", method = RequestMethod.GET)
@@ -169,7 +184,7 @@ public class Controller {
     public List<Movie> getRecommendationByTime() {
         LocalTime now = LocalTime.now();
         int hourNumber = now.getHour();
-        if (hourNumber <= 5)
+        if (hourNumber <= 6)
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationDawn());
         else if (hourNumber <= 12)
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationMorning());
