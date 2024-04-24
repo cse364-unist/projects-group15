@@ -167,6 +167,54 @@ public class Controller {
         );
     }
 
+    @RequestMapping(value = "/recommendation/info/{userId}", method = RequestMethod.GET)
+    public List<Movie> getRecommendationByAge(@PathVariable String userId) {
+        if (userDAL.checkUserIdExists(userId)) {
+            Optional<User> optUser = userRepository.findById(userId);
+            User user = optUser.get();
+            HashMap<String, Integer> counter = new HashMap<>();
+            String age = user.getAge();
+            String gender = user.getGender();
+            String occupation = user.getOccupation();
+            for (int i = 0; i < associations.toArray().length; i++) {
+                int t = 0;
+                if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getAge(), age))
+                    t += 7;
+                if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getGender(), gender))
+                    t += 2;
+                if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getOccupation(), occupation))
+                    t += 21;
+                if (t > 0) {
+                    for (String e : associations.get(i)) {
+                        counter.put(e, counter.getOrDefault(e, 0) + t);
+                    }
+                }
+//                int t = 0;
+//                if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getAge(), age) &&
+//                        Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getGender(), gender) &&
+//                        Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getOccupation(), occupation)
+//                ) {
+//                    for (String e : associations.get(i)) {
+//                        counter.put(e, counter.getOrDefault(e, 0) + 1);
+//                    }
+//                }
+            }
+            System.out.println(counter.entrySet().stream()
+                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                    .limit(20)
+                    .toList());
+            return movieDAL.getMovieInfosByMovieId(counter.entrySet().stream()
+                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                    .map(Map.Entry::getKey)
+                    .limit(20)
+                    .toList()
+            );
+        } else {
+            throw new RuntimeException("Invalid Id");
+        }
+
+    }
+
     @RequestMapping(value = "/recommendation/season", method = RequestMethod.GET)
     public List<Movie> getRecommendationBySeason() {
         LocalDate today = LocalDate.now();
