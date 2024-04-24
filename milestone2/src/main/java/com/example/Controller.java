@@ -29,6 +29,7 @@ public class Controller {
     private final UserDAL userDAL;
     private final EmployeeDAL employeeDAL;
     private String currentUserID;
+    public static List<Set<String>> associations;
 
     public Controller(MovieRepository movieRepository, RatingRepository ratingRepository, UserRepository userRepository, EmployeeRepository employeeRepository, MovieDAL movieDAL, RatingDAL ratingDAL, UserDAL userDAL, EmployeeDAL employeeDAL) {
         this.movieRepository = movieRepository;
