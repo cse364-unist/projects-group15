@@ -1,5 +1,6 @@
 package com.example;
 
+import java.util.List;
 import java.util.ArrayList;
 import org.springframework.batch.item.ItemProcessor;
 
@@ -10,7 +11,7 @@ public class MovieProcessor implements ItemProcessor<MovieModel, Movie> {
 		final String movieId = movieModel.movieId();
 		final String title = movieModel.title();
 		final String genre = movieModel.genre();
-		final ArrayList<String> keywords = new ArrayList<String>();
+		final List<String> keywords = new ArrayList<String>();
 
 		final Movie transformedMovie = new Movie(movieId, title, genre, keywords);
 		return transformedMovie;

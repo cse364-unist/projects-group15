@@ -7,10 +7,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+
+import javax.management.RuntimeErrorException;
 
 @RestController
 @RequestMapping(value = "/")
@@ -25,7 +28,6 @@ public class Controller {
     private final RatingDAL ratingDAL;
     private final UserDAL userDAL;
     private final EmployeeDAL employeeDAL;
-    private String currentUserID;
 
     public Controller(MovieRepository movieRepository, RatingRepository ratingRepository, UserRepository userRepository, EmployeeRepository employeeRepository, MovieDAL movieDAL, RatingDAL ratingDAL, UserDAL userDAL, EmployeeDAL employeeDAL) {
         this.movieRepository = movieRepository;
@@ -36,7 +38,6 @@ public class Controller {
         this.ratingDAL = ratingDAL;
         this.userDAL = userDAL;
         this.employeeDAL = employeeDAL;
-        this.currentUserID = "";
     }
     @RequestMapping(value = "/employees", method = RequestMethod.GET)
     public List<Employee> getEmployees() {
@@ -179,16 +180,16 @@ public class Controller {
     }
 
     // Bookmark function
-    // login
-    @RequestMapping(value = "/users/login/{userId}/{password}", method = RequestMethod.GET)
-    public void setCurrentUserID(@PathVariable String userId, @PathVariable String password) {
+    // Password match
+    @RequestMapping(value = "/users/{userId}/{password}", method = RequestMethod.GET)
+    public User passwordMatch(@PathVariable String userId, @PathVariable String password) {
         if (userDAL.checkUserIdExists(userId)) {
             Optional<User> optUser = userRepository.findById(userId);
             User user = optUser.get();
 
             if (Objects.equals(user.getPassword(), password)) {
-                this.currentUserID = userId;
                 System.out.println("Log in successful with ID : " + userId);
+                return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Invalid ID"));
             } else {
                 throw new RuntimeException("Password do not match");
             }
@@ -196,8 +197,94 @@ public class Controller {
             throw new RuntimeException("Invalid Id");
         }
     }
-    /*
-    @RequestMapping(value = "users/add/{movieID}", method = RequestMethod.GET)
-    public void 
-    */
+
+    // Update password
+    @RequestMapping(value = "/users/password/{userId}/{passwordOld}", method = RequestMethod.PUT)
+    public User changeUserPassword(@RequestBody String passwordNew, @PathVariable String userId, @PathVariable String passwordOld) {
+        if (userDAL.checkUserIdExists(userId)) {
+            User user = userRepository.findById(userId).get();
+
+            if (Objects.equals(user.getPassword(), passwordOld)) {
+                User updateUser = userRepository.findById(userId).get();
+                updateUser.setPassword(passwordNew);
+                userRepository.save(updateUser);
+                return updateUser;
+            } else {
+                throw new RuntimeException("Password do not match");
+            }
+        } else {
+            throw new RuntimeException("Invalid Id");
+        }
+    }
+
+    // Update info
+    @RequestMapping(value = "/users/info/{userId}/{type}", method = RequestMethod.PUT)
+    public User changeUserInfo(@RequestBody String value, @PathVariable String userId, @PathVariable String type) {
+        if (userDAL.checkUserIdExists(userId)) {
+            User updateUser = userRepository.findById(userId).get();
+
+            if (type == "gender") {
+                if (value == "M" || value == "F") {
+                    updateUser.setGender(value);
+                    userRepository.save(updateUser);
+                    return updateUser;
+                } else {
+                    throw new RuntimeException("invalid value");
+                }
+            } else if (type == "age") {
+                if (value == "1" || value == "18" || value == "25" || value == "35" || value == "45" || value == "50" || value == "56") {
+                    updateUser.setAge(value);
+                    userRepository.save(updateUser);
+                    return updateUser;
+                } else {
+                    throw new RuntimeException("invalid value");
+                }
+            } else if (type == "occupation") {
+                int occupation = Integer.parseInt(value);
+                if (occupation >= 0 && occupation <= 20) {
+                    updateUser.setOccupation(value);
+                    userRepository.save(updateUser);
+                    return updateUser;
+                } else {
+                    throw new RuntimeException("invalid value");
+                }
+            } else if (type == "username") {
+                updateUser.setUserName(value);
+                userRepository.save(updateUser);
+                return updateUser;
+            } else {
+                throw new RuntimeException("invalid operation");
+            }
+        } else {
+            throw new RuntimeException("invalid user");
+        }
+    }
+
+    // Setting movie list
+    @RequestMapping(value = "/users/movielist/{userId}", method = RequestMethod.PUT)
+    public User addMovieList(@RequestBody String listname, @PathVariable String userId) {
+        if (userDAL.checkUserIdExists(userId)) {
+            User updateUser = userRepository.findById(userId).get();
+            HashMap<String, List<String>> updateList = updateUser.getMovieList();
+            updateList.put(listname, new ArrayList<String>());
+            userRepository.save(updateUser);
+            return updateUser;
+        } else {
+            throw new RuntimeException("invalid user");
+        }
+    }
+
+    @RequestMapping(value = "users/movielist/{userId}/{listname}", method = RequestMethod.PUT)
+    public User addElementToMovieList(@RequestBody String element, @PathVariable String userId, @PathVariable String listname) {
+        if (userDAL.checkUserIdExists(userId)) {
+            User updateUser = userRepository.findById(userId).get();
+            HashMap<String, List<String>> updateList = updateUser.getMovieList();
+            List<String> tempList = updateList.get(listname);
+            tempList.add(element);
+            userRepository.save(updateUser);
+            return updateUser;
+        } else {
+            throw new RuntimeException("invalid user");
+        }
+    }
 }

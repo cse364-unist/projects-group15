@@ -1,6 +1,6 @@
 package com.example;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,5 +18,5 @@ public class User {
     private String occupation;
     private String userName;
     private String password;
-    private ArrayList<ArrayList<String>> movieList;
+    private HashMap<String, List<String>> movieList;
 }

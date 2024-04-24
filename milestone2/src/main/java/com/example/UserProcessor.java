@@ -1,6 +1,6 @@
 package com.example;
 
-import java.util.ArrayList;
+import java.util.*;
 import org.springframework.batch.item.ItemProcessor;
 
 public class UserProcessor implements ItemProcessor<UserModel, User> {
@@ -13,11 +13,10 @@ public class UserProcessor implements ItemProcessor<UserModel, User> {
         final String occupation = userModel.occupation();
         final String userName = "default_username";
         final String password = "default_password";
-        final ArrayList<ArrayList<String>> movieList = new ArrayList<>();
+        final HashMap<String, List<String>> movieList = new HashMap<String, List<String>>();
 
         final User transformedUser = new User(userId, gender, age, occupation, userName, password, movieList);
 
         return transformedUser;
     }
-
 }
