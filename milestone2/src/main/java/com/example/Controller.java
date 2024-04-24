@@ -168,7 +168,7 @@ public class Controller {
     public List<Movie> getRecommendationByTime() {
         LocalTime now = LocalTime.now();
         int hourNumber = now.getHour();
-        if (hourNumber <= 5)
+        if (hourNumber <= 6)
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationDawn());
         else if (hourNumber <= 12)
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationMorning());

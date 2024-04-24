@@ -50,7 +50,7 @@ public interface RatingRepository extends MongoRepository<Rating, String> {
 
     @Aggregation(pipeline = {
             "{ $addFields: { 'month': { $hour: { $toDate: { $multiply: [{ $toLong: '$timeStamp' }, 1000] } } } } }",
-            "{ $group: { _id: '$movieId', totalCount: { $sum: 1 }, conditionalCount: { $sum: { $cond: [{ $and: [{ $gte: ['$hour', 0] }, { $lte: ['$hour', 5] }] }, 1, 0] } } } }",
+            "{ $group: { _id: '$movieId', totalCount: { $sum: 1 }, conditionalCount: { $sum: { $cond: [{ $and: [{ $gte: ['$hour', 0] }, { $lte: ['$hour', 6] }] }, 1, 0] } } } }",
             "{ $addFields: { 'matchRatio': { $divide: ['$conditionalCount', '$totalCount'] } } }",
             "{ $sort: { 'matchRatio': -1 } }",
             "{ $limit: 20 }",
@@ -59,7 +59,7 @@ public interface RatingRepository extends MongoRepository<Rating, String> {
     List<String> getRecommendationDawn();
     @Aggregation(pipeline = {
             "{ $addFields: { 'month': { $hour: { $toDate: { $multiply: [{ $toLong: '$timeStamp' }, 1000] } } } } }",
-            "{ $group: { _id: '$movieId', totalCount: { $sum: 1 }, conditionalCount: { $sum: { $cond: [{ $and: [{ $gte: ['$hour', 6] }, { $lte: ['$hour', 12] }] }, 1, 0] } } } }",
+            "{ $group: { _id: '$movieId', totalCount: { $sum: 1 }, conditionalCount: { $sum: { $cond: [{ $and: [{ $gte: ['$hour', 7] }, { $lte: ['$hour', 12] }] }, 1, 0] } } } }",
             "{ $addFields: { 'matchRatio': { $divide: ['$conditionalCount', '$totalCount'] } } }",
             "{ $sort: { 'matchRatio': -1 } }",
             "{ $limit: 20 }",
