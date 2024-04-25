@@ -12,6 +12,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.management.RuntimeErrorException;
 
@@ -164,15 +166,6 @@ public class Controller {
         if (countMovieId < 10)
             return null;
         int finalCountMovieId = countMovieId;
-        System.out.println(counter.entrySet().stream()
-                .filter(entry -> entry.getValue() > 9)
-                .sorted(Comparator.comparingDouble(
-                        (Map.Entry<String, Integer> entry) -> (double) totalCounter.get(entry.getKey()) * finalCountMovieId / entry.getValue()
-                ))
-                        .map(entry -> Map.entry(entry.getKey(), (double) totalCounter.get(entry.getKey()) * finalCountMovieId / entry.getValue()))
-                .skip(1)
-                .limit(20)
-                .toList());
         return movieDAL.getMovieInfosByMovieId(counter.entrySet().stream()
                 .filter(entry -> entry.getValue() > 9)
                 .sorted(Comparator.comparingDouble(
@@ -193,8 +186,13 @@ public class Controller {
             String age = user.getAge();
             String gender = user.getGender();
             String occupation = user.getOccupation();
+
+            Map<String, User> usersMap = userRepository.findAll()
+                    .stream()
+                    .collect(Collectors.toMap(User::getUserId, Function.identity()));
+
             for (UserMovies userMovies : associations) {
-                User comparingUser = userRepository.findById(String.valueOf(Integer.parseInt(userMovies.getUserId()))).get();
+                User comparingUser = usersMap.get(userMovies.getUserId());
                 int score = 0;
                 score += (Objects.equals(comparingUser.getAge(), age)) ? 7 : -1;
                 score += (Objects.equals(comparingUser.getGender(), gender)) ? 2 : -1;
