@@ -168,7 +168,7 @@ public class Controller {
     }
 
     @RequestMapping(value = "/recommendation/info/{userId}", method = RequestMethod.GET)
-    public List<Movie> getRecommendationByAge(@PathVariable String userId) {
+    public List<Movie> getRecommendationByInfo(@PathVariable String userId) {
         if (userDAL.checkUserIdExists(userId)) {
             Optional<User> optUser = userRepository.findById(userId);
             User user = optUser.get();
@@ -180,14 +180,18 @@ public class Controller {
                 int t = 0;
                 if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getAge(), age))
                     t += 7;
+                else
+                    t -= 1;
                 if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getGender(), gender))
                     t += 2;
+                else
+                    t -= 1;
                 if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getOccupation(), occupation))
                     t += 21;
-                if (t > 0) {
-                    for (String e : associations.get(i)) {
-                        counter.put(e, counter.getOrDefault(e, 0) + t);
-                    }
+                else
+                    t -= 1;
+                for (String e : associations.get(i)) {
+                    counter.put(e, counter.getOrDefault(e, 0) + t);
                 }
 //                int t = 0;
 //                if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getAge(), age) &&
@@ -365,5 +369,10 @@ public class Controller {
         } else {
             throw new RuntimeException("invalid user");
         }
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public List<Movie> getSearch(@RequestBody String line) {
+        return null;
     }
 }
