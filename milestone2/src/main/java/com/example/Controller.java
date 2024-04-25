@@ -29,7 +29,8 @@ public class Controller {
     private final UserDAL userDAL;
     private final EmployeeDAL employeeDAL;
     private String currentUserID;
-    public static List<Set<String>> associations;
+    public static List<UserMovies> associations;
+    public static Map<String, Integer> totalCounter = new HashMap<>();
 
     public Controller(MovieRepository movieRepository, RatingRepository ratingRepository, UserRepository userRepository, EmployeeRepository employeeRepository, MovieDAL movieDAL, RatingDAL ratingDAL, UserDAL userDAL, EmployeeDAL employeeDAL) {
         this.movieRepository = movieRepository;
@@ -151,20 +152,36 @@ public class Controller {
     @RequestMapping(value = "/recommendation/movie/{movieId}", method = RequestMethod.GET)
     public List<Movie> getRecommendationByMovieId(@PathVariable String movieId) {
         HashMap<String, Integer> counter = new HashMap<>();
-        for (Set<String> s : associations) {
-            if (s.contains(movieId)) {
-                for (String e : s) {
+        int countMovieId = 0;
+        for (UserMovies userMovies : associations) {
+            if (userMovies.getMovieIds().contains(movieId)) {
+                countMovieId++;
+                for (String e : userMovies.getMovieIds()) {
                     counter.put(e, counter.getOrDefault(e, 0) + 1);
                 }
             }
         }
+        if (countMovieId < 10)
+            return null;
+        int finalCountMovieId = countMovieId;
+        System.out.println(counter.entrySet().stream()
+                .filter(entry -> entry.getValue() > 9)
+                .sorted(Comparator.comparingDouble(
+                        (Map.Entry<String, Integer> entry) -> (double) totalCounter.get(entry.getKey()) * finalCountMovieId / entry.getValue()
+                ))
+                        .map(entry -> Map.entry(entry.getKey(), (double) totalCounter.get(entry.getKey()) * finalCountMovieId / entry.getValue()))
+                .skip(1)
+                .limit(20)
+                .toList());
         return movieDAL.getMovieInfosByMovieId(counter.entrySet().stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .filter(entry -> entry.getValue() > 9)
+                .sorted(Comparator.comparingDouble(
+                        (Map.Entry<String, Integer> entry) -> (double) totalCounter.get(entry.getKey()) * finalCountMovieId / entry.getValue()
+                ))
                 .map(Map.Entry::getKey)
                 .skip(1)
                 .limit(20)
-                .toList()
-        );
+                .toList());
     }
 
     @RequestMapping(value = "/recommendation/info/{userId}", method = RequestMethod.GET)
@@ -176,37 +193,16 @@ public class Controller {
             String age = user.getAge();
             String gender = user.getGender();
             String occupation = user.getOccupation();
-            for (int i = 0; i < associations.toArray().length; i++) {
-                int t = 0;
-                if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getAge(), age))
-                    t += 7;
-                else
-                    t -= 1;
-                if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getGender(), gender))
-                    t += 2;
-                else
-                    t -= 1;
-                if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getOccupation(), occupation))
-                    t += 21;
-                else
-                    t -= 1;
-                for (String e : associations.get(i)) {
-                    counter.put(e, counter.getOrDefault(e, 0) + t);
+            for (UserMovies userMovies : associations) {
+                User comparingUser = userRepository.findById(String.valueOf(Integer.parseInt(userMovies.getUserId()))).get();
+                int score = 0;
+                score += (Objects.equals(comparingUser.getAge(), age)) ? 7 : -1;
+                score += (Objects.equals(comparingUser.getGender(), gender)) ? 2 : -1;
+                score += (Objects.equals(comparingUser.getOccupation(), occupation)) ? 21 : -1;
+                for (String e : userMovies.getMovieIds()) {
+                    counter.put(e, counter.getOrDefault(e, 0) + score);
                 }
-//                int t = 0;
-//                if (Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getAge(), age) &&
-//                        Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getGender(), gender) &&
-//                        Objects.equals(userRepository.findById(String.valueOf(i + 1)).get().getOccupation(), occupation)
-//                ) {
-//                    for (String e : associations.get(i)) {
-//                        counter.put(e, counter.getOrDefault(e, 0) + 1);
-//                    }
-//                }
             }
-            System.out.println(counter.entrySet().stream()
-                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                    .limit(20)
-                    .toList());
             return movieDAL.getMovieInfosByMovieId(counter.entrySet().stream()
                     .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                     .map(Map.Entry::getKey)
@@ -216,7 +212,6 @@ public class Controller {
         } else {
             throw new RuntimeException("Invalid Id");
         }
-
     }
 
     @RequestMapping(value = "/recommendation/season", method = RequestMethod.GET)

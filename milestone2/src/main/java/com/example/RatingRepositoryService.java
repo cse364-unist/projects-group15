@@ -16,7 +16,9 @@ public class RatingRepositoryService {
 
     public List<UserMovies> groupMoviesByUser() {
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.group("userId").addToSet("movieId").as("movieIds")
+                Aggregation.group("userId")
+                        .first("userId").as("userId")
+                        .addToSet("movieId").as("movieIds")
         ).withOptions(AggregationOptions.builder().allowDiskUse(true).build());
 
         return mongoTemplate.aggregate(aggregation, "ratings", UserMovies.class).getMappedResults();
