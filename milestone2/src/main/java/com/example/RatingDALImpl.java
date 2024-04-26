@@ -55,4 +55,9 @@ public class RatingDALImpl implements RatingDAL{
                 .and("movieId").is(movieId));
         return mongoTemplate.findOne(query, Rating.class).getId();
     }
+    @Override
+    public List<Rating> getUserbyMovieId(String movieId) {
+        Query query = Query.query(Criteria.where("movieId").is(movieId));
+        return mongoTemplate.find(query, Rating.class);
+    }
 }
