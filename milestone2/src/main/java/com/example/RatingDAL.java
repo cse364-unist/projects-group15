@@ -8,4 +8,6 @@ public interface RatingDAL {
     boolean checkUserIdAndMovieIdExist(String userId, String movieId);
 
     String getIdByUserIdAndMovieId(String userId, String movieId);
+
+    List<Rating> getUserbyMovieId(String movieId);
 }
