@@ -54,9 +54,86 @@ public class Controller {
                 .orElseThrow(() -> new RuntimeException("Invalid Id"));
     }
     @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.GET)
-    public Movie getMovie(@PathVariable String movieId) {
-        return movieRepository.findById(movieId)
-                .orElseThrow(() -> new RuntimeException("Invalid Id"));
+    public void getMovie(@PathVariable String movieId) {
+
+        if(movieDAL.checkMovieIdExists(movieId)){
+            String movieName=movieRepository.findById(movieId).orElseThrow(()->
+                    new RuntimeException("Invalid ID")).getTitle();
+            String movieJenre=movieRepository.findById(movieId).orElseThrow(()->
+                    new RuntimeException("Invalid ID")).getGenre();
+            System.out.println("moive-name: "+movieName);
+            System.out.println("movie-jenre: "+movieJenre);
+
+
+            AggregationResults<AverageRating> result = mongoTemplate.aggregate(
+                    Aggregation.newAggregation(
+                            Aggregation.group("movieId")
+                                    .first("movieId").as("movieId")
+                                    .avg("rating").as("averageRating")),
+                    "ratings",
+                    AverageRating.class
+            );
+            List<String> listResultMovieId=result.getMappedResults().stream()
+                    .map(AverageRating::getMovieId)
+                    .collect(Collectors.toList());
+            List<Double> listResultAverageRating=result.getMappedResults().stream()
+                    .map(AverageRating::getAverageRating)
+                    .collect(Collectors.toList());
+            int index = listResultMovieId.indexOf(movieId);
+
+            System.out.printf("AverageRating: %.3f\n", listResultAverageRating.get(index));
+
+
+            List<Rating> userIdbyRating = ratingDAL.getUserbyMovieId(movieId);
+
+            float[] GenderRatio=new float[2];
+            float[] AgeRatio=new float[7];
+            float[] OccupationRatio=new float[21];
+
+            for(Rating innerRating: userIdbyRating){
+                User user=userDAL.getUserbyUserId(innerRating.getUserId());
+                if(user.getGender().equals("M")){
+                    GenderRatio[0]+=1;
+                }else{
+                    GenderRatio[1]+=1;
+                }
+                if(userDAL.classifyAge(user.getAge()).equals(-1)){
+                    throw new RuntimeException(("Invalid Age"));
+                }else{
+                    AgeRatio[userDAL.classifyAge((user.getAge()))]+=1;
+                }
+                if(userDAL.classifyOccupation(user.getOccupation()).equals(-1)){
+                    throw new RuntimeException("Invalid Occupation");
+                }else{
+                    OccupationRatio[userDAL.classifyOccupation(user.getOccupation())]+=1;
+                }
+            }
+            float sumOfPeople = GenderRatio[0]+GenderRatio[1];
+
+            System.out.print("Ratio of Age->");
+            System.out.printf("Under 18: %.3f ", AgeRatio[0]/sumOfPeople);
+            System.out.printf("18~24: %.3f ", AgeRatio[1]/sumOfPeople);
+            System.out.printf("25~34: %.3f ", AgeRatio[2]/sumOfPeople);
+            System.out.printf("35~44: %.3f ", AgeRatio[3]/sumOfPeople);
+            System.out.printf("45~49: %.3f ", AgeRatio[4]/sumOfPeople);
+            System.out.printf("50~55: %.3f ", AgeRatio[5]/sumOfPeople);
+            System.out.printf("56+: %.3f\n", AgeRatio[6]/sumOfPeople);
+
+            System.out.println("Ratio of Occupation | \"other\" or not specified | " +
+                    "academic/educator | artist | clerical/admin | college/grad student | " +
+                    "customer service | doctor/health care | executive/managerial | farmer | " +
+                    "homemaker | K-12 student | lawyer | programmer | retired | " +
+                    "sales/marketing | scientist | self-employed | technician/engineer | " +
+                    "tradesman/craftsman | unemployed | writer");
+            System.out.printf("%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n"
+            ,OccupationRatio[0]/sumOfPeople, OccupationRatio[1]/sumOfPeople, OccupationRatio[2]/sumOfPeople, OccupationRatio[3]/sumOfPeople, OccupationRatio[4]/sumOfPeople, OccupationRatio[5]/sumOfPeople, OccupationRatio[6]/sumOfPeople, OccupationRatio[7]/sumOfPeople, OccupationRatio[8]/sumOfPeople, OccupationRatio[9]/sumOfPeople, OccupationRatio[10]/sumOfPeople, OccupationRatio[11]/sumOfPeople, OccupationRatio[12]/sumOfPeople, OccupationRatio[13]/sumOfPeople, OccupationRatio[14]/sumOfPeople, OccupationRatio[15]/sumOfPeople, OccupationRatio[16]/sumOfPeople, OccupationRatio[17]/sumOfPeople, OccupationRatio[18]/sumOfPeople, OccupationRatio[19]/sumOfPeople, OccupationRatio[20]/sumOfPeople);
+
+            System.out.printf("Ratio of Gender->M: %.3f F: %.3f\n ",
+                    GenderRatio[0]/sumOfPeople, GenderRatio[1]/sumOfPeople);
+        }
+        else{
+            throw new RuntimeException("Invalid Id");
+        }
     }
     @RequestMapping(value = "/ratings/{userId}/{movieId}", method = RequestMethod.GET)
     public Rating getRating(@PathVariable String userId, @PathVariable String movieId) {
