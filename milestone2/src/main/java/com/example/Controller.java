@@ -455,8 +455,81 @@ public class Controller {
         }
     }
 
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public List<Movie> getSearch(@RequestBody String line) {
-        return null;
+    @RequestMapping(value = "/searching/{userId}/{line}", method = RequestMethod.GET)
+    public List<SearchDTO> getSearching(@PathVariable String userId,
+                                     @PathVariable String line,
+                                     @RequestParam(name = "containingGenres", required = false, defaultValue = "") String containingGenres,
+                                     @RequestParam(name = "filteringGenres", required = false, defaultValue = "") String filteringGenres,
+                                     @RequestParam(name = "containingLists", required = false, defaultValue = "") String containingLists,
+                                     @RequestParam(name = "filteringLists", required = false, defaultValue = "") String filteringLists) {
+
+        MyFilter myFilter = new MyFilter(containingGenres, filteringGenres, containingLists, filteringLists);
+        HashMap<String, Integer> scoreMap = new HashMap<>();
+        String normalizedLine = line.replace(" ", "").toLowerCase();
+
+        for (Movie movie : movieRepository.findAll()) {
+            String title = movie.getTitle().substring(0, movie.getTitle().length() - 7).replace(" ", "").toLowerCase();
+            int len1 = normalizedLine.length();
+            int len2 = title.length();
+            int[][] dp = new int[len1 + 1][len2 + 1];
+
+            for (int i = 0; i <= len1; i++) {
+                dp[i][0] = i;
+            }
+            for (int j = 0; j <= len2; j++) {
+                dp[0][j] = j;
+            }
+
+            for (int i = 1; i <= len1; i++) {
+                for (int j = 1; j <= len2; j++) {
+                    int cost = (normalizedLine.charAt(i - 1) == title.charAt(j - 1)) ? 0 : 1;
+                    dp[i][j] = Math.min(Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1), dp[i - 1][j - 1] + cost);
+                }
+            }
+
+            scoreMap.put(movie.getMovieId(), dp[len1][len2]);
+        }
+
+        User user = userRepository.findById(userId).get();
+        List<String> containingIds = user.getMovieList().entrySet().stream()
+                .filter(e -> myFilter.getContainingLists().contains(e.getKey()))
+                .map(Map.Entry::getValue)
+                .flatMap(List::stream)
+                .toList();
+        List<String> filteringIds = user.getMovieList().entrySet().stream()
+                .filter(e -> myFilter.getFilteringLists().contains(e.getKey()))
+                .map(Map.Entry::getValue)
+                .flatMap(List::stream)
+                .toList();
+
+        return scoreMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .filter(e -> {
+                    if (myFilter.getContainingGenres() == null) {
+                        return true;
+                    } else {
+                        Set<String> movieGenres = new HashSet<>(Arrays.asList(
+                                movieRepository.findById(e.getKey()).get().getGenre().toLowerCase().split("\\|")
+                        ));
+                        movieGenres.retainAll(myFilter.getContainingGenres());
+                        return !movieGenres.isEmpty();
+                    }
+                })
+                .filter(e -> {
+                    if (myFilter.getFilteringGenres() == null) {
+                        return true;
+                    } else {
+                        Set<String> movieGenres = new HashSet<>(Arrays.asList(
+                                movieRepository.findById(e.getKey()).get().getGenre().toLowerCase().split("\\|")
+                        ));
+                        movieGenres.removeAll(myFilter.getFilteringGenres());
+                        return !movieGenres.isEmpty();
+                    }
+                })
+                .filter(e -> myFilter.getContainingLists() == null || containingIds.contains(e.getKey()))
+                .filter(e -> myFilter.getFilteringLists() == null || !filteringIds.contains(e.getKey()))
+                .limit(20)
+                .map(e -> new SearchDTO(movieRepository.findById(e.getKey()).get(), e.getValue()))
+                .collect(Collectors.toList());
     }
 }
