@@ -2,20 +2,18 @@ package com.example;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import javax.management.RuntimeErrorException;
 
 @RestController
 @RequestMapping(value = "/")
@@ -54,43 +52,41 @@ public class Controller {
                 .orElseThrow(() -> new RuntimeException("Invalid Id"));
     }
     @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.GET)
-    public void getMovie(@PathVariable String movieId) {
+    public getMovieDTO getMovie(@PathVariable String movieId) {
 
         if(movieDAL.checkMovieIdExists(movieId)){
-            String movieName=movieRepository.findById(movieId).orElseThrow(()->
-                    new RuntimeException("Invalid ID")).getTitle();
-            String movieJenre=movieRepository.findById(movieId).orElseThrow(()->
-                    new RuntimeException("Invalid ID")).getGenre();
-            System.out.println("moive-name: "+movieName);
-            System.out.println("movie-jenre: "+movieJenre);
 
+            Movie movie = movieRepository.findById(movieId).orElseThrow(()->
+                    new RuntimeException("Invalid ID"));
 
-            AggregationResults<AverageRating> result = mongoTemplate.aggregate(
-                    Aggregation.newAggregation(
-                            Aggregation.group("movieId")
-                                    .first("movieId").as("movieId")
-                                    .avg("rating").as("averageRating")),
-                    "ratings",
-                    AverageRating.class
-            );
-            List<String> listResultMovieId=result.getMappedResults().stream()
-                    .map(AverageRating::getMovieId)
-                    .collect(Collectors.toList());
-            List<Double> listResultAverageRating=result.getMappedResults().stream()
-                    .map(AverageRating::getAverageRating)
-                    .collect(Collectors.toList());
-            int index = listResultMovieId.indexOf(movieId);
+            getMovieDTO ret = new getMovieDTO();
 
-            System.out.printf("AverageRating: %.3f\n", listResultAverageRating.get(index));
+            String movieName = movie.getTitle();
+            String movieGenre = movie.getGenre();
+            System.out.println("movie-name: "+movieName);
+            System.out.println("movie-genre: "+movieGenre);
+            ret.setMovieName(movieName);
+            ret.setMovieGenre(movieGenre);
 
+            MatchOperation matchStage = Aggregation.match(Criteria.where("movieId").is(movieId));
+            GroupOperation groupStage = Aggregation.group("movieId")
+                    .avg("rating").as("averageRating");
+            Aggregation aggregation = Aggregation.newAggregation(matchStage, groupStage);
+            double averageRating =
+                    mongoTemplate.aggregate(aggregation, "ratings", AverageRating.class)
+                            .getMappedResults().get(0).getAverageRating();
 
-            List<Rating> userIdbyRating = ratingDAL.getUserbyMovieId(movieId);
+            System.out.printf("AverageRating: %.3f\n", averageRating);
+
+            ret.setAverageRating(averageRating);
+
+            List<Rating> userIdByRating = ratingDAL.getUserbyMovieId(movieId);
 
             float[] GenderRatio=new float[2];
             float[] AgeRatio=new float[7];
             float[] OccupationRatio=new float[21];
 
-            for(Rating innerRating: userIdbyRating){
+            for(Rating innerRating: userIdByRating){
                 User user=userDAL.getUserbyUserId(innerRating.getUserId());
                 if(user.getGender().equals("M")){
                     GenderRatio[0]+=1;
@@ -110,14 +106,23 @@ public class Controller {
             }
             float sumOfPeople = GenderRatio[0]+GenderRatio[1];
 
+            for (int i = 0; i < AgeRatio.length; i++)
+                AgeRatio[i] /= sumOfPeople;
+            for (int i = 0; i < OccupationRatio.length; i++)
+                OccupationRatio[i] /= sumOfPeople;
+            for (int i = 0; i < GenderRatio.length; i++)
+                GenderRatio[i] /= sumOfPeople;
+
             System.out.print("Ratio of Age->");
-            System.out.printf("Under 18: %.3f ", AgeRatio[0]/sumOfPeople);
-            System.out.printf("18~24: %.3f ", AgeRatio[1]/sumOfPeople);
-            System.out.printf("25~34: %.3f ", AgeRatio[2]/sumOfPeople);
-            System.out.printf("35~44: %.3f ", AgeRatio[3]/sumOfPeople);
-            System.out.printf("45~49: %.3f ", AgeRatio[4]/sumOfPeople);
-            System.out.printf("50~55: %.3f ", AgeRatio[5]/sumOfPeople);
-            System.out.printf("56+: %.3f\n", AgeRatio[6]/sumOfPeople);
+            System.out.printf("Under 18: %.3f ", AgeRatio[0]);
+            System.out.printf("18~24: %.3f ", AgeRatio[1]);
+            System.out.printf("25~34: %.3f ", AgeRatio[2]);
+            System.out.printf("35~44: %.3f ", AgeRatio[3]);
+            System.out.printf("45~49: %.3f ", AgeRatio[4]);
+            System.out.printf("50~55: %.3f ", AgeRatio[5]);
+            System.out.printf("56+: %.3f\n", AgeRatio[6]);
+
+            ret.setAgeRatio(AgeRatio);
 
             System.out.println("Ratio of Occupation | \"other\" or not specified | " +
                     "academic/educator | artist | clerical/admin | college/grad student | " +
@@ -126,10 +131,19 @@ public class Controller {
                     "sales/marketing | scientist | self-employed | technician/engineer | " +
                     "tradesman/craftsman | unemployed | writer");
             System.out.printf("%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n"
-            ,OccupationRatio[0]/sumOfPeople, OccupationRatio[1]/sumOfPeople, OccupationRatio[2]/sumOfPeople, OccupationRatio[3]/sumOfPeople, OccupationRatio[4]/sumOfPeople, OccupationRatio[5]/sumOfPeople, OccupationRatio[6]/sumOfPeople, OccupationRatio[7]/sumOfPeople, OccupationRatio[8]/sumOfPeople, OccupationRatio[9]/sumOfPeople, OccupationRatio[10]/sumOfPeople, OccupationRatio[11]/sumOfPeople, OccupationRatio[12]/sumOfPeople, OccupationRatio[13]/sumOfPeople, OccupationRatio[14]/sumOfPeople, OccupationRatio[15]/sumOfPeople, OccupationRatio[16]/sumOfPeople, OccupationRatio[17]/sumOfPeople, OccupationRatio[18]/sumOfPeople, OccupationRatio[19]/sumOfPeople, OccupationRatio[20]/sumOfPeople);
+            ,OccupationRatio[0], OccupationRatio[1], OccupationRatio[2], OccupationRatio[3], OccupationRatio[4], OccupationRatio[5],
+                    OccupationRatio[6], OccupationRatio[7], OccupationRatio[8], OccupationRatio[9], OccupationRatio[10],
+                    OccupationRatio[11], OccupationRatio[12], OccupationRatio[13], OccupationRatio[14], OccupationRatio[15],
+                    OccupationRatio[16], OccupationRatio[17], OccupationRatio[18], OccupationRatio[19], OccupationRatio[20]);
+
+            ret.setOccupationRatio(OccupationRatio);
 
             System.out.printf("Ratio of Gender->M: %.3f F: %.3f\n ",
-                    GenderRatio[0]/sumOfPeople, GenderRatio[1]/sumOfPeople);
+                    GenderRatio[0], GenderRatio[1]);
+
+            ret.setGenderRatio(GenderRatio);
+
+            return ret;
         }
         else{
             throw new RuntimeException("Invalid Id");
