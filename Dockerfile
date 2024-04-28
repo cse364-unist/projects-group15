@@ -32,8 +32,8 @@ RUN apt-get update \
     openjdk-17-jdk \
     maven \
     curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /root/project
-COPY milestone2 ./milestone2
 COPY run.sh .
 CMD ["/bin/bash"]
