@@ -23,33 +23,20 @@ public class Controller {
     private final MovieRepository movieRepository;
     private final RatingRepository ratingRepository;
     private final UserRepository userRepository;
-    private final EmployeeRepository employeeRepository;
     private final MovieDAL movieDAL;
     private final RatingDAL ratingDAL;
     private final UserDAL userDAL;
-    private final EmployeeDAL employeeDAL;
     private String currentUserID;
     public static List<UserMovies> associations;
     public static Map<String, Integer> totalCounter = new HashMap<>();
 
-    public Controller(MovieRepository movieRepository, RatingRepository ratingRepository, UserRepository userRepository, EmployeeRepository employeeRepository, MovieDAL movieDAL, RatingDAL ratingDAL, UserDAL userDAL, EmployeeDAL employeeDAL) {
+    public Controller(MovieRepository movieRepository, RatingRepository ratingRepository, UserRepository userRepository, MovieDAL movieDAL, RatingDAL ratingDAL, UserDAL userDAL) {
         this.movieRepository = movieRepository;
         this.ratingRepository = ratingRepository;
         this.userRepository = userRepository;
-        this.employeeRepository = employeeRepository;
         this.movieDAL = movieDAL;
         this.ratingDAL = ratingDAL;
         this.userDAL = userDAL;
-        this.employeeDAL = employeeDAL;
-    }
-    @RequestMapping(value = "/employees", method = RequestMethod.GET)
-    public List<Employee> getEmployees() {
-        return employeeRepository.findAll();
-    }
-    @RequestMapping(value = "/employees/{id}", method = RequestMethod.GET)
-    public Employee getEmployee(@PathVariable String id) {
-        return employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Invalid Id"));
     }
     @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.GET)
     public getMovieDTO getMovie(@PathVariable String movieId) {
@@ -168,12 +155,6 @@ public class Controller {
         else
             return movieRepository.save(movie);
     }
-    @RequestMapping(value = "/employees", method = RequestMethod.POST)
-    public Employee addNewEmployee(@RequestBody EmployeeDTO employeeDTO) {
-        Employee.inc += 1;
-        Employee employee = new Employee(Employee.inc.toString(), employeeDTO.getName(), employeeDTO.getRole());
-        return employeeRepository.save(employee);
-    }
     @RequestMapping(value = "/ratings", method = RequestMethod.POST)
     public Rating addNewRating(@RequestBody Rating rating) {
         if (rating.getRating() >= 1 && rating.getRating() <= 5) {
@@ -193,13 +174,6 @@ public class Controller {
             throw new InputMismatchException("Invalid Id");
         else
             return userRepository.save(user);
-    }
-    @RequestMapping(value = "/employees/{id}", method = RequestMethod.PUT)
-    public Employee updateEmployee(@RequestBody Employee employee, @PathVariable String id) {
-        if (employeeDAL.checkEmployeeIdExists(id))
-            return employeeRepository.save(employee);
-        else
-            throw new RuntimeException("Invalid Id");
     }
     @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.PUT)
     public Movie updateMovie(@RequestBody Movie movie, @PathVariable String movieId) {
@@ -241,7 +215,6 @@ public class Controller {
             throw new InputMismatchException("Invalid rating range");
 
     }
-
     @RequestMapping(value = "/recommendation/movie/{movieId}", method = RequestMethod.GET)
     public List<Movie> getRecommendationByMovieId(@PathVariable String movieId) {
         HashMap<String, Integer> counter = new HashMap<>();
