@@ -508,9 +508,4 @@ public class Controller {
                 .map(e -> new SearchDTO(movieRepository.findById(e.getKey()).get(), e.getValue()))
                 .collect(Collectors.toList());
     }
-
-    @Test
-    public void test() {
-        assertEquals(1+1, 2);
-    }
 }
