@@ -132,7 +132,28 @@ public class AppTest {
     @Test
     public void testGetRecommendationBySeason() {
         restTemplate.exchange(
-                "http://localhost:" + port + "/recommendation/season",
+                "http://localhost:" + port + "/recommendation/season/1",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
+        );
+        restTemplate.exchange(
+                "http://localhost:" + port + "/recommendation/season/4",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
+        );
+        restTemplate.exchange(
+                "http://localhost:" + port + "/recommendation/season/7",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
+        );
+        restTemplate.exchange(
+                "http://localhost:" + port + "/recommendation/season/10",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Movie>>() {
@@ -142,7 +163,28 @@ public class AppTest {
     @Test
     public void testGetRecommendationByTime() {
         restTemplate.exchange(
-                "http://localhost:" + port + "/recommendation/time",
+                "http://localhost:" + port + "/recommendation/time/1",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
+        );
+        restTemplate.exchange(
+                "http://localhost:" + port + "/recommendation/time/7",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
+        );
+        restTemplate.exchange(
+                "http://localhost:" + port + "/recommendation/time/13",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
+        );
+        restTemplate.exchange(
+                "http://localhost:" + port + "/recommendation/time/19",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Movie>>() {

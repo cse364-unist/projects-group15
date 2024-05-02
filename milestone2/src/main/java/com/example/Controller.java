@@ -275,10 +275,9 @@ public class Controller {
         }
     }
 
-    @RequestMapping(value = "/recommendation/season", method = RequestMethod.GET)
-    public List<Movie> getRecommendationBySeason() {
-        LocalDate today = LocalDate.now();
-        int monthNumber = today.getMonthValue();
+    @RequestMapping(value = "/recommendation/season/{month}", method = RequestMethod.GET)
+    public List<Movie> getRecommendationBySeason(@PathVariable String month) {
+        int monthNumber = Integer.parseInt(month);
         if (monthNumber < 3 || monthNumber == 12)
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationWinter());
         else if (monthNumber < 6)
@@ -289,10 +288,9 @@ public class Controller {
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationFall());
     }
 
-    @RequestMapping(value = "/recommendation/time", method = RequestMethod.GET)
-    public List<Movie> getRecommendationByTime() {
-        LocalTime now = LocalTime.now();
-        int hourNumber = now.getHour();
+    @RequestMapping(value = "/recommendation/time/{hour}", method = RequestMethod.GET)
+    public List<Movie> getRecommendationByTime(@PathVariable String hour) {
+        int hourNumber = Integer.parseInt(hour);
         if (hourNumber <= 6)
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationDawn());
         else if (hourNumber <= 12)
