@@ -159,7 +159,7 @@ public class AppTest {
                 }
         );
         restTemplate.exchange(
-                "http://localhost:" + port + "/searching/1/toy",
+                "http://localhost:" + port + "/searching/1/toy?containingLists=123&filteringLists=456",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<SearchDTO>>() {
