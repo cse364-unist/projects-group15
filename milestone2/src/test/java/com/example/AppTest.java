@@ -56,10 +56,12 @@ public class AppTest {
     public void testAddNewRating() {
         Rating rating1 = new Rating("1", "2", 3.0, "987654321");
         Rating rating2 = new Rating("15151", "2", 3.0, "987654321");
-        Rating rating3 = new Rating("1", "2", 6.0, "987654321");
+        Rating rating3 = new Rating("1", "22255", 3.0, "987654321");
+        Rating rating4 = new Rating("1", "2", 6.0, "987654321");
         restTemplate.postForEntity("http://localhost:" + port + "/ratings", rating1, Rating.class);
         restTemplate.postForEntity("http://localhost:" + port + "/ratings", rating2, Rating.class);
         restTemplate.postForEntity("http://localhost:" + port + "/ratings", rating3, Rating.class);
+        restTemplate.postForEntity("http://localhost:" + port + "/ratings", rating4, Rating.class);
     }
     @Test
     public void testAddNewUser() {
@@ -70,18 +72,24 @@ public class AppTest {
     }
     @Test
     public void testUpdateMovie() {
-        Movie movie = new Movie("1", "test", "action", null);
-        restTemplate.put("http://localhost:" + port + "/movies", movie);
+        Movie movie1 = new Movie("1", "test", "action", null);
+        Movie movie2 = new Movie("21212", "test", "action", null);
+        restTemplate.put("http://localhost:" + port + "/movies/1", movie1);
+        restTemplate.put("http://localhost:" + port + "/movies/21212", movie2);
     }
     @Test
     public void testUpdateRating() {
-        Rating rating = new Rating("1", "1", 3.0, "987654321");
-        restTemplate.put("http://localhost:" + port + "/ratings", rating);
+        restTemplate.put("http://localhost:" + port + "/ratings/1/1", "3");
+        restTemplate.put("http://localhost:" + port + "/ratings/12321/1", "3");
+        restTemplate.put("http://localhost:" + port + "/ratings/1/1", "6");
     }
     @Test
     public void testUpdateUser() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        restTemplate.put("http://localhost:" + port + "/users", user);
+        User user1 = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
+        User user2 = new User("99987", "F", "1", "10", "default_username", "default_password", new HashMap<>());
+        restTemplate.put("http://localhost:" + port + "/users/1", user1);
+        restTemplate.put("http://localhost:" + port + "/users/1", user2);
+        restTemplate.put("http://localhost:" + port + "/users/99987", user2);
     }
     @Test
     public void testGetMoviesByRating() {
@@ -119,6 +127,7 @@ public class AppTest {
                 new ParameterizedTypeReference<List<Movie>>() {
                 }
         );
+        restTemplate.getForEntity("http://localhost:" + port + "/recommendation/info/15771", RuntimeException.class);
     }
     @Test
     public void testGetRecommendationBySeason() {
@@ -144,6 +153,13 @@ public class AppTest {
     public void testGetSearching() {
         restTemplate.exchange(
                 "http://localhost:" + port + "/searching/1/toy?containingGenres=animation&filteringGenres=drama",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<SearchDTO>>() {
+                }
+        );
+        restTemplate.exchange(
+                "http://localhost:" + port + "/searching/1/toy",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<SearchDTO>>() {
