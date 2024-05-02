@@ -15,9 +15,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
 @RestController
 @RequestMapping(value = "/")
 public class Controller {
@@ -154,7 +151,7 @@ public class Controller {
     @RequestMapping(value = "/movies", method = RequestMethod.POST)
     public Movie addNewMovie(@RequestBody Movie movie) {
         if (movieDAL.checkMovieIdExists(movie.getMovieId()))
-            throw new InputMismatchException("Invalid Id");
+            throw new RuntimeException("Invalid Id");
         else
             return movieRepository.save(movie);
     }
@@ -174,7 +171,7 @@ public class Controller {
     @RequestMapping(value = "/users", method = RequestMethod.POST)
     public User addNewUser(@RequestBody User user) {
         if (userDAL.checkUserIdExists(user.getUserId()))
-            throw new InputMismatchException("Invalid Id");
+            throw new RuntimeException("Invalid Id");
         else
             return userRepository.save(user);
     }
@@ -200,7 +197,7 @@ public class Controller {
                 throw new RuntimeException("Invalid Ids");
         }
         else
-            throw new InputMismatchException("Invalid rating range");
+            throw new RuntimeException("Invalid rating range");
     }
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
     public User updateUser(@RequestBody User user, @PathVariable String userId) {
@@ -215,8 +212,7 @@ public class Controller {
         if (doubleRating >= 1 && doubleRating <= 5)
             return movieDAL.getMovieInfosByMovieId(ratingDAL.getMovieIdsByRating(doubleRating));
         else
-            throw new InputMismatchException("Invalid rating range");
-
+            throw new RuntimeException("Invalid rating range");
     }
     @RequestMapping(value = "/recommendation/movie/{movieId}", method = RequestMethod.GET)
     public List<Movie> getRecommendationByMovieId(@PathVariable String movieId) {
@@ -351,23 +347,23 @@ public class Controller {
         if (userDAL.checkUserIdExists(userId)) {
             User updateUser = userRepository.findById(userId).get();
 
-            if (type == "gender") {
-                if (value == "M" || value == "F") {
+            if (Objects.equals(type, "gender")) {
+                if (Set.of("M", "F").contains(value)) {
                     updateUser.setGender(value);
                     userRepository.save(updateUser);
                     return updateUser;
                 } else {
                     throw new RuntimeException("invalid value");
                 }
-            } else if (type == "age") {
-                if (value == "1" || value == "18" || value == "25" || value == "35" || value == "45" || value == "50" || value == "56") {
+            } else if (Objects.equals(type, "age")) {
+                if (Set.of("1", "18", "25", "35", "45", "50", "56").contains(value)) {
                     updateUser.setAge(value);
                     userRepository.save(updateUser);
                     return updateUser;
                 } else {
                     throw new RuntimeException("invalid value");
                 }
-            } else if (type == "occupation") {
+            } else if (Objects.equals(type, "occupation")) {
                 int occupation = Integer.parseInt(value);
                 if (occupation >= 0 && occupation <= 20) {
                     updateUser.setOccupation(value);
@@ -376,7 +372,7 @@ public class Controller {
                 } else {
                     throw new RuntimeException("invalid value");
                 }
-            } else if (type == "username") {
+            } else if (Objects.equals(type, "username")) {
                 updateUser.setUserName(value);
                 userRepository.save(updateUser);
                 return updateUser;
@@ -468,17 +464,17 @@ public class Controller {
 
         User user = userRepository.findById(userId).get();
         List<String> containingIds = user.getMovieList().entrySet().stream()
-                .filter(e -> myFilter.getContainingLists().contains(e.getKey()))
+                .filter(e -> myFilter.getContainingLists() == null || myFilter.getContainingLists().contains(e.getKey()))
                 .map(Map.Entry::getValue)
                 .flatMap(List::stream)
                 .toList();
         List<String> filteringIds = user.getMovieList().entrySet().stream()
-                .filter(e -> myFilter.getFilteringLists().contains(e.getKey()))
+                .filter(e -> myFilter.getFilteringLists() == null || myFilter.getFilteringLists().contains(e.getKey()))
                 .map(Map.Entry::getValue)
                 .flatMap(List::stream)
                 .toList();
 
-        return scoreMap.entrySet().stream()
+        List<SearchDTO> result = scoreMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
                 .filter(e -> {
                     if (myFilter.getContainingGenres() == null) {
@@ -506,6 +502,10 @@ public class Controller {
                 .filter(e -> myFilter.getFilteringLists() == null || !filteringIds.contains(e.getKey()))
                 .limit(20)
                 .map(e -> new SearchDTO(movieRepository.findById(e.getKey()).get(), e.getValue()))
-                .collect(Collectors.toList());
+                .toList();
+
+        System.out.println(result);
+
+        return result;
     }
 }

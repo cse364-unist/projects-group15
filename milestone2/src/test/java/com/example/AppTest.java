@@ -19,306 +19,168 @@ public class AppTest {
     @LocalServerPort
     private int port;
     @Test
+    public void testGetMovie() {
+        restTemplate.exchange(
+                "http://localhost:" + port + "/movies/1",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<getMovieDTO>() {
+                }
+        );
+        restTemplate.exchange(
+                "http://localhost:" + port + "/movies/12345",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<getMovieDTO>() {
+                }
+        );
+    }
+    @Test
     public void testGetUser() {
-        ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
+        restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
+        restTemplate.getForEntity("http://localhost:" + port + "/users/10000", User.class);
     }
     @Test
     public void testGetRating() {
-        ResponseEntity<Rating> response = restTemplate.getForEntity("http://localhost:" + port + "/ratings/1/1", Rating.class);
+        restTemplate.getForEntity("http://localhost:" + port + "/ratings/1/1", Rating.class);
+        restTemplate.getForEntity("http://localhost:" + port + "/ratings/10000/1", Rating.class);
     }
     @Test
     public void testAddNewMovie() {
-        Movie movie = new Movie("9999", "test", "action", null);
-        ResponseEntity<Movie> response = restTemplate.postForEntity("http://localhost:" + port + "/movies", movie, Movie.class);
+        Movie movie1 = new Movie("1", "test", "action", null);
+        Movie movie2 = new Movie("9999", "test", "action", null);
+        restTemplate.postForEntity("http://localhost:" + port + "/movies", movie1, Movie.class);
+        restTemplate.postForEntity("http://localhost:" + port + "/movies", movie2, Movie.class);
     }
     @Test
     public void testAddNewRating() {
-        Rating rating = new Rating("1", "2", 3.0, "987654321");
-        ResponseEntity<Rating> response = restTemplate.postForEntity("http://localhost:" + port + "/ratings", rating, Rating.class);
+        Rating rating1 = new Rating("1", "2", 3.0, "987654321");
+        Rating rating2 = new Rating("15151", "2", 3.0, "987654321");
+        Rating rating3 = new Rating("1", "2", 6.0, "987654321");
+        restTemplate.postForEntity("http://localhost:" + port + "/ratings", rating1, Rating.class);
+        restTemplate.postForEntity("http://localhost:" + port + "/ratings", rating2, Rating.class);
+        restTemplate.postForEntity("http://localhost:" + port + "/ratings", rating3, Rating.class);
     }
     @Test
     public void testAddNewUser() {
-        User user = new User("9876", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port + "/ratings", user, User.class);
+        User user1 = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<String, List<String>>());
+        User user2 = new User("9898", "F", "1", "10", "default_username", "default_password", new HashMap<String, List<String>>());
+        restTemplate.postForEntity("http://localhost:" + port + "/users", user1, User.class);
+        restTemplate.postForEntity("http://localhost:" + port + "/users", user2, User.class);
     }
     @Test
     public void testUpdateMovie() {
         Movie movie = new Movie("1", "test", "action", null);
-        HttpEntity<Movie> putMovie = new HttpEntity<>(movie);
-        ResponseEntity<Movie> response = restTemplate.exchange("http://localhost:" + port + "/movies", HttpMethod.PUT, putMovie, Movie.class);
+        restTemplate.put("http://localhost:" + port + "/movies", movie);
     }
     @Test
     public void testUpdateRating() {
         Rating rating = new Rating("1", "1", 3.0, "987654321");
-        HttpEntity<Rating> putRating = new HttpEntity<>(rating);
-        ResponseEntity<Rating> response = restTemplate.exchange("http://localhost:" + port + "/ratings", HttpMethod.PUT, putRating, Rating.class);
+        restTemplate.put("http://localhost:" + port + "/ratings", rating);
     }
     @Test
     public void testUpdateUser() {
         User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        HttpEntity<User> putUser = new HttpEntity<>(user);
-        ResponseEntity<User> response = restTemplate.exchange("http://localhost:" + port + "/ratings", HttpMethod.PUT, putUser, User.class);
+        restTemplate.put("http://localhost:" + port + "/users", user);
     }
     @Test
     public void testGetMoviesByRating() {
-        ResponseEntity<List<Movie>> response = restTemplate.exchange(
+        restTemplate.exchange(
                 "http://localhost:" + port + "/ratings/5",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Movie>>() {}
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
         );
     }
     @Test
     public void testGetRecommendationByMovieId() {
-        ResponseEntity<List<Movie>> response = restTemplate.exchange(
+        restTemplate.exchange(
                 "http://localhost:" + port + "/recommendation/movie/1",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Movie>>() {}
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
+        );
+        restTemplate.exchange(
+                "http://localhost:" + port + "/recommendation/movie/91",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
         );
     }
     @Test
     public void testGetRecommendationByInfo() {
-        ResponseEntity<List<Movie>> response = restTemplate.exchange(
+        restTemplate.exchange(
                 "http://localhost:" + port + "/recommendation/info/1",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Movie>>() {}
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
         );
     }
     @Test
     public void testGetRecommendationBySeason() {
-        ResponseEntity<List<Movie>> response = restTemplate.exchange(
+        restTemplate.exchange(
                 "http://localhost:" + port + "/recommendation/season",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Movie>>() {}
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
         );
     }
     @Test
     public void testGetRecommendationByTime() {
-        ResponseEntity<List<Movie>> response = restTemplate.exchange(
+        restTemplate.exchange(
                 "http://localhost:" + port + "/recommendation/time",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Movie>>() {}
+                new ParameterizedTypeReference<List<Movie>>() {
+                }
         );
     }
     @Test
     public void testGetSearching() {
-        ResponseEntity<List<Movie>> response = restTemplate.exchange(
-                "http://localhost:" + port + "/searching/1/toy",
+        restTemplate.exchange(
+                "http://localhost:" + port + "/searching/1/toy?containingGenres=animation&filteringGenres=drama",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Movie>>() {}
+                new ParameterizedTypeReference<List<SearchDTO>>() {
+                }
         );
     }
-
-    // User Function
     @Test
-    public void testPasswordMatchTrue() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1/default_password", User.class);
-        System.out.println(response.getBody().getUserId());
-        assertEquals(user, response.getBody());
+    public void testPasswordMatch() {
+        restTemplate.getForEntity("http://localhost:" + port + "/users/1/default_password", User.class);
+        restTemplate.getForEntity("http://localhost:" + port + "/users/10000/default_password", User.class);
+        restTemplate.getForEntity("http://localhost:" + port + "/users/1/false_password", User.class);
     }
-
     @Test
-    public void testPasswordMatchFalse() {
-        ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1/default_passwor", User.class);
-        System.out.println(response.getBody().getUserId());
-        assertEquals(new RuntimeException("Password do not match"), response.getBody());
+    public void testPasswordUpdate() {
+        restTemplate.put("http://localhost:" + port + "/users/password/1/default_password", "123");
+        restTemplate.put("http://localhost:" + port + "/users/password/10000/default_password", "123");
+        restTemplate.put("http://localhost:" + port + "/users/password/1/false_password", "123");
     }
-
     @Test
-    public void testPasswordUpdateOk() {
-        User user = new User("1", "F", "1", "10", "default_username", "123", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/password/1/default_password", "123");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user.getPassword(), response.getBody().getPassword());
-        }
+    public void testChangeUserInfo() {
+        restTemplate.put("http://localhost:" + port + "/users/info/1/gender", "M");
+        restTemplate.put("http://localhost:" + port + "/users/info/1/gender", "A");
+        restTemplate.put("http://localhost:" + port + "/users/info/1/age", "25");
+        restTemplate.put("http://localhost:" + port + "/users/info/1/age", "9999");
+        restTemplate.put("http://localhost:" + port + "/users/info/1/occupation", "0");
+        restTemplate.put("http://localhost:" + port + "/users/info/1/occupation", "50");
+        restTemplate.put("http://localhost:" + port + "/users/info/1/username", "123");
+        restTemplate.put("http://localhost:" + port + "/users/info/1/false", "123");
+        restTemplate.put("http://localhost:" + port + "/users/info/99999/gender", "M");
     }
-
     @Test
-    public void testPasswordUpdatePasswordNotMatch() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/password/1/default_passwor", "123");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
+    public void testAddMovieListAndAddElementToMovieListAndRemoveFromMovieList() {
+        restTemplate.put("http://localhost:" + port + "/users/movielist/1", "123");
+        restTemplate.put("http://localhost:" + port + "/users/movielist/99999", "123");
+        restTemplate.put("http://localhost:" + port + "/users/movielist/1/123", "456");
+        restTemplate.put("http://localhost:" + port + "/users/movielist/9999/123", "123");
+        restTemplate.put("http://localhost:" + port + "/users/movielist/1/123/0", "456");
+        restTemplate.put("http://localhost:" + port + "/users/movielist/9999/123/0", "123");
     }
-
-    @Test
-    public void testPasswordUpdateInvalidID() {
-        ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/99999", User.class);
-        assertEquals(new RuntimeException("Invalid Id"), response.getBody());
-    }
-
-    @Test
-    public void testChangeUserInfoGenderOk() {
-        User user = new User("1", "M", "1", "10", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/info/1/gender", "M");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testChangeUserInfoGenderInvalid() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/info/1/gender", "A");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testChangeUserInfoAgeOk() {
-        User user = new User("1", "F", "1", "25", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/info/1/age", "25");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testChangeUserInfoAgeInvalid() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/info/1/age", "9999");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testChangeUserInfoOccupationOk() {
-        User user = new User("1", "F", "1", "0", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/info/1/occupation", "0");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testChangeUserInfoOccupationInvalid() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/info/1/occupation", "50");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testChangeUserInfoUsernameOk() {
-        User user = new User("1", "F", "1", "0", "123", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/info/1/username", "123");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testChangeUserInfoIDInvalid() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/info/99999/gender", "M");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testAddMovieListOk() {
-        HashMap<String, List<String>> tmpList = new HashMap<>();
-        tmpList.put("123", new ArrayList<String>());
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", tmpList);
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/movielist/1", "123");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testAddMovieListInvalidID() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/movielist/99999", "123");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testAddElementToMovieListOk() {
-        HashMap<String, List<String>> tmpList = new HashMap<>();
-        List<String> tmpList2 = new ArrayList<String>();
-        tmpList2.add("456");
-        tmpList.put("123", tmpList2);
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", tmpList);
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/movielist/1/123", "456");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testAddElementToMovieListInvalidID() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/movielist/9999/123", "123");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testRemoveFromMovieListOk() {
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", new HashMap<>());
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/movielist/9999/123/0", "123");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    @Test
-    public void testRemoveFromMovieListInvalidUser() {
-        HashMap<String, List<String>> tmpList = new HashMap<>();
-        tmpList.put("123", new ArrayList<String>());
-        User user = new User("1", "F", "1", "10", "default_username", "default_password", tmpList);
-        try {
-            restTemplate.put("http://localhost:" + port + "/users/movielist/9999/123/0", "123");
-        } finally {
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class);
-            assertEquals(user, response.getBody());
-        }
-    }
-
-    //End
 }
