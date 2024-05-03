@@ -6,7 +6,9 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -133,7 +135,7 @@ public class Controller {
             return ret;
         }
         else{
-            throw new RuntimeException("Invalid Id");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
     @RequestMapping(value = "/ratings/{userId}/{movieId}", method = RequestMethod.GET)
@@ -141,17 +143,17 @@ public class Controller {
         if (ratingDAL.checkUserIdAndMovieIdExist(userId, movieId))
             return ratingDAL.getRating(userId, movieId);
         else
-            throw new RuntimeException("Invalid Ids");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
     }
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.GET)
     public User getUser(@PathVariable String userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Invalid Id"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id"));
     }
     @RequestMapping(value = "/movies", method = RequestMethod.POST)
     public Movie addNewMovie(@RequestBody Movie movie) {
         if (movieDAL.checkMovieIdExists(movie.getMovieId()))
-            throw new RuntimeException("Invalid Id");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         else
             return movieRepository.save(movie);
     }
@@ -161,26 +163,31 @@ public class Controller {
             if (ratingDAL.checkUserIdAndMovieIdExist(rating.getUserId(), rating.getMovieId()) ||
                     !userDAL.checkUserIdExists(rating.getUserId()) ||
                     !movieDAL.checkMovieIdExists(rating.getMovieId()))
-                throw new RuntimeException("Invalid Ids");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
             else
                 return ratingRepository.save(rating);
         }
         else
-            throw new RuntimeException("Invalid rating range");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
     }
     @RequestMapping(value = "/users", method = RequestMethod.POST)
     public User addNewUser(@RequestBody User user) {
         if (userDAL.checkUserIdExists(user.getUserId()))
-            throw new RuntimeException("Invalid Id");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
         else
             return userRepository.save(user);
     }
     @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.PUT)
     public Movie updateMovie(@RequestBody Movie movie, @PathVariable String movieId) {
-        if (movieDAL.checkMovieIdExists(movieId))
-            return movieRepository.save(movie);
+        System.out.println("Attempting to update movie with ID: " + movieId);
+        if (movieDAL.checkMovieIdExists(movieId)){
+            Movie updatedMovie = movieRepository.save(movie);
+            System.out.println("Updated movie details: " + updatedMovie);
+            System.out.println("Updated movie details: " + updatedMovie.getTitle());
+            return updatedMovie;
+        }
         else
-            throw new RuntimeException("Invalid Id");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
     }
     @RequestMapping(value = "/ratings/{userId}/{movieId}", method = RequestMethod.PUT)
     public Rating updateRating(@RequestBody String rating, @PathVariable String userId, @PathVariable String movieId) {
@@ -191,20 +198,20 @@ public class Controller {
                 Rating updatingRating = ratingRepository.findById(id).get();
                 updatingRating.setRating(doubleRating);
                 updatingRating.setTimeStamp(String.valueOf(Instant.now().getEpochSecond()));
-                return updatingRating;
+                return ratingRepository.save(updatingRating);
             }
             else
-                throw new RuntimeException("Invalid Ids");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
         else
-            throw new RuntimeException("Invalid rating range");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
     }
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
     public User updateUser(@RequestBody User user, @PathVariable String userId) {
         if (userDAL.checkUserIdExists(userId) && Objects.equals(user.getUserId(), userId))
             return userRepository.save(user);
         else
-            throw new RuntimeException("Invalid Id");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
     }
     @RequestMapping(value = "/ratings/{rating}", method = RequestMethod.GET)
     public List<Movie> getMoviesByRating(@PathVariable String rating) {
@@ -212,7 +219,7 @@ public class Controller {
         if (doubleRating >= 1 && doubleRating <= 5)
             return movieDAL.getMovieInfosByMovieId(ratingDAL.getMovieIdsByRating(doubleRating));
         else
-            throw new RuntimeException("Invalid rating range");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
     }
     @RequestMapping(value = "/recommendation/movie/{movieId}", method = RequestMethod.GET)
     public List<Movie> getRecommendationByMovieId(@PathVariable String movieId) {
@@ -271,34 +278,38 @@ public class Controller {
                     .toList()
             );
         } else {
-            throw new RuntimeException("Invalid Id");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
 
     @RequestMapping(value = "/recommendation/season/{month}", method = RequestMethod.GET)
     public List<Movie> getRecommendationBySeason(@PathVariable String month) {
         int monthNumber = Integer.parseInt(month);
-        if (monthNumber < 3 || monthNumber == 12)
+        if (Set.of(1, 2, 12).contains(monthNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationWinter());
-        else if (monthNumber < 6)
+        else if (Set.of(3, 4, 5).contains(monthNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationSpring());
-        else if (monthNumber < 9)
+        else if (Set.of(6, 7, 8).contains(monthNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationSummer());
-        else
+        else if (Set.of(9, 10, 11).contains(monthNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationFall());
+        else
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid value");
     }
 
     @RequestMapping(value = "/recommendation/time/{hour}", method = RequestMethod.GET)
     public List<Movie> getRecommendationByTime(@PathVariable String hour) {
         int hourNumber = Integer.parseInt(hour);
-        if (hourNumber <= 6)
+        if (Set.of(1, 2, 3, 4, 5, 6).contains(hourNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationDawn());
-        else if (hourNumber <= 12)
+        else if (Set.of(7, 8, 9, 10, 11, 12).contains(hourNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationMorning());
-        else if (hourNumber <= 18)
+        else if (Set.of(13, 14, 15, 16, 17, 18).contains(hourNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationAfternoon());
-        else
+        else if (Set.of(19, 20, 21, 22, 23).contains(hourNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationNight());
+        else
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid value");
     }
 
     // Bookmark function
@@ -311,12 +322,12 @@ public class Controller {
 
             if (Objects.equals(user.getPassword(), password)) {
                 System.out.println("Log in successful with ID : " + userId);
-                return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Invalid ID"));
+                return userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid iD"));
             } else {
-                throw new RuntimeException("Password do not match");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid password");
             }
         } else {
-            throw new RuntimeException("Invalid Id");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
 
@@ -332,10 +343,10 @@ public class Controller {
                 userRepository.save(updateUser);
                 return updateUser;
             } else {
-                throw new RuntimeException("Password do not match");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid password");
             }
         } else {
-            throw new RuntimeException("Invalid Id");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
 
@@ -351,7 +362,7 @@ public class Controller {
                     userRepository.save(updateUser);
                     return updateUser;
                 } else {
-                    throw new RuntimeException("invalid value");
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid value");
                 }
             } else if (Objects.equals(type, "age")) {
                 if (Set.of("1", "18", "25", "35", "45", "50", "56").contains(value)) {
@@ -359,7 +370,7 @@ public class Controller {
                     userRepository.save(updateUser);
                     return updateUser;
                 } else {
-                    throw new RuntimeException("invalid value");
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid value");
                 }
             } else if (Objects.equals(type, "occupation")) {
                 int occupation = Integer.parseInt(value);
@@ -368,17 +379,17 @@ public class Controller {
                     userRepository.save(updateUser);
                     return updateUser;
                 } else {
-                    throw new RuntimeException("invalid value");
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid value");
                 }
             } else if (Objects.equals(type, "username")) {
                 updateUser.setUserName(value);
                 userRepository.save(updateUser);
                 return updateUser;
             } else {
-                throw new RuntimeException("invalid operation");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid operation");
             }
         } else {
-            throw new RuntimeException("invalid user");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
 
@@ -392,7 +403,7 @@ public class Controller {
             userRepository.save(updateUser);
             return updateUser;
         } else {
-            throw new RuntimeException("invalid user");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
 
@@ -406,7 +417,7 @@ public class Controller {
             userRepository.save(updateUser);
             return updateUser;
         } else {
-            throw new RuntimeException("invalid user");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
 
@@ -421,7 +432,7 @@ public class Controller {
             userRepository.save(updateUser);
             return updateUser;
         } else {
-            throw new RuntimeException("invalid user");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
 
