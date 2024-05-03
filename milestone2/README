@@ -9,7 +9,7 @@ GET Movies by Rating
 curl -X GET http://localhost:8080/ratings/???
 Put the target rating to ???.
 
-GET Movie
+GET movie data (e.g. moive title, genre, user imformation who rate this movie)
 curl -X GET http://localhost:8080/movies/???
 Put the movie id to ???.
 
