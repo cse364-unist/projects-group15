@@ -52,8 +52,6 @@ public class Controller {
 
             String movieName = movie.getTitle();
             String movieGenre = movie.getGenre();
-            System.out.println("movie-name: "+movieName);
-            System.out.println("movie-genre: "+movieGenre);
             ret.setMovieName(movieName);
             ret.setMovieGenre(movieGenre);
 
@@ -64,8 +62,6 @@ public class Controller {
             double averageRating =
                     mongoTemplate.aggregate(aggregation, "ratings", AverageRating.class)
                             .getMappedResults().get(0).getAverageRating();
-
-            System.out.printf("AverageRating: %.3f\n", averageRating);
 
             ret.setAverageRating(averageRating);
 
@@ -102,33 +98,9 @@ public class Controller {
             for (int i = 0; i < GenderRatio.length; i++)
                 GenderRatio[i] /= sumOfPeople;
 
-            System.out.print("Ratio of Age->");
-            System.out.printf("Under 18: %.3f ", AgeRatio[0]);
-            System.out.printf("18~24: %.3f ", AgeRatio[1]);
-            System.out.printf("25~34: %.3f ", AgeRatio[2]);
-            System.out.printf("35~44: %.3f ", AgeRatio[3]);
-            System.out.printf("45~49: %.3f ", AgeRatio[4]);
-            System.out.printf("50~55: %.3f ", AgeRatio[5]);
-            System.out.printf("56+: %.3f\n", AgeRatio[6]);
-
             ret.setAgeRatio(AgeRatio);
 
-            System.out.println("Ratio of Occupation | \"other\" or not specified | " +
-                    "academic/educator | artist | clerical/admin | college/grad student | " +
-                    "customer service | doctor/health care | executive/managerial | farmer | " +
-                    "homemaker | K-12 student | lawyer | programmer | retired | " +
-                    "sales/marketing | scientist | self-employed | technician/engineer | " +
-                    "tradesman/craftsman | unemployed | writer");
-            System.out.printf("%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n"
-            ,OccupationRatio[0], OccupationRatio[1], OccupationRatio[2], OccupationRatio[3], OccupationRatio[4], OccupationRatio[5],
-                    OccupationRatio[6], OccupationRatio[7], OccupationRatio[8], OccupationRatio[9], OccupationRatio[10],
-                    OccupationRatio[11], OccupationRatio[12], OccupationRatio[13], OccupationRatio[14], OccupationRatio[15],
-                    OccupationRatio[16], OccupationRatio[17], OccupationRatio[18], OccupationRatio[19], OccupationRatio[20]);
-
             ret.setOccupationRatio(OccupationRatio);
-
-            System.out.printf("Ratio of Gender->M: %.3f F: %.3f\n ",
-                    GenderRatio[0], GenderRatio[1]);
 
             ret.setGenderRatio(GenderRatio);
 
@@ -179,11 +151,8 @@ public class Controller {
     }
     @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.PUT)
     public Movie updateMovie(@RequestBody Movie movie, @PathVariable String movieId) {
-        System.out.println("Attempting to update movie with ID: " + movieId);
         if (movieDAL.checkMovieIdExists(movieId)){
             Movie updatedMovie = movieRepository.save(movie);
-            System.out.println("Updated movie details: " + updatedMovie);
-            System.out.println("Updated movie details: " + updatedMovie.getTitle());
             return updatedMovie;
         }
         else
@@ -321,7 +290,6 @@ public class Controller {
             User user = optUser.get();
 
             if (Objects.equals(user.getPassword(), password)) {
-                System.out.println("Log in successful with ID : " + userId);
                 return userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid iD"));
             } else {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid password");
@@ -512,8 +480,6 @@ public class Controller {
                 .limit(20)
                 .map(e -> new SearchDTO(movieRepository.findById(e.getKey()).get(), e.getValue()))
                 .toList();
-
-        System.out.println(result);
 
         return result;
     }
