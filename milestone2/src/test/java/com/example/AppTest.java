@@ -460,7 +460,6 @@ public class AppTest {
     @Test
     @Order(3)
     public void testAddElementToMovieListValid() {
-        System.out.println("aa " + restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class).getBody().getMovieList());
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> requestEntity = new HttpEntity<>("456", headers);
         ResponseEntity<User> response = restTemplate.exchange(
@@ -469,12 +468,10 @@ public class AppTest {
                 requestEntity,
                 User.class);
         assertTrue(response.getBody().getMovieList().get("123").contains("456"));
-        System.out.println("bb " + restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class).getBody().getMovieList());
     }
     @Test
     @Order(4)
     public void testAddElementToMovieListInvalid() {
-        System.out.println("ee " + restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class).getBody().getMovieList());
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> requestEntity = new HttpEntity<>("456", headers);
         ResponseEntity<String> response = restTemplate.exchange(
@@ -483,12 +480,10 @@ public class AppTest {
                 requestEntity,
                 String.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 NOT FOUND status");
-        System.out.println("ff " + restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class).getBody().getMovieList());
     }
     @Test
     @Order(5)
     public void testRemoveFromMovieListValid() {
-        System.out.println("cc " + restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class).getBody().getMovieList());
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> requestEntity = new HttpEntity<>("456", headers);
         ResponseEntity<User> response = restTemplate.exchange(
@@ -497,7 +492,6 @@ public class AppTest {
                 requestEntity,
                 User.class);
         assertEquals(0, response.getBody().getMovieList().get("123").size());
-        System.out.println("dd " + restTemplate.getForEntity("http://localhost:" + port + "/users/1", User.class).getBody().getMovieList());
     }
     @Test
     @Order(6)
