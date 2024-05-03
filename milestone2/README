@@ -2,76 +2,105 @@ You should wait a minute until data is loaded(After seeing comment Complete from
 You should put your own values to '???' to use methods.
 I think you put the correct type of values.
 I treat the errors for only invalid ids, and rating range.
-There are some data except for employees.
+Every id should be valid and range of rating is between 1 to 5.
+If not, you will get an error message from console and client.
 
-:::::: How to use get method ::::::
+GET Movies by Rating
+curl -X GET http://localhost:8080/ratings/???
+Put the target rating to ???.
 
-Getting all employees data
-curl -X GET http://localhost:8080/employees
-
-Getting employee data
-curl -X GET http://localhost:8080/employees/???
-Put the employee id to ???.
-
-Getting movie data
+GET Movie
 curl -X GET http://localhost:8080/movies/???
 Put the movie id to ???.
 
-Getting rating data
+GET Rating
 curl -X GET http://localhost:8080/ratings/???/???
 Put the user id, movie id to ??? sequentially.
 
-Getting user data
+GET User
 curl -X GET http://localhost:8080/users/???
 Put the user id to ???.
 
-Every id should be valid and if not, you will get an error message from console and client.
-
-:::::: How to use post method ::::::
-
-Posting employee data
-curl -X POST http://localhost:8080/employees -H ‘Content-type:application/json’ -d '{"name": "???", "role": "???"}'
-Put the employee data to ??? to post.
-
-Posting movie data
+POST Movie
 curl -X POST http://localhost:8080/movies -H 'Content-Type: application/json' -d '{"movieId": "???", "title": "???", "genre": "???"}'
 Put the movie data to ??? to post.
 
-Posting rating data
+POST Rating
 curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "???", "movieId": "???", "rating": "???", "timeStamp": "???"}' / good
 Put the rating data to ??? to post.
 
-Posting user data
+POST User
 curl -X POST http://localhost:8080/users -H 'Content-Type: application/json' -d '{"userId": "???", "gender": "???", "age": "???", "occupation": "???", "zipcode": "???"}'
 Put the user data to ??? to post.
 
-Every id should be valid and range of rating is between 1 to 5.
-If not, you will get an error message from console and client.
-
-:::::: How to use put method ::::::
-
-Putting employee data
-curl -X PUT http://localhost:8080/employees/??? -H ‘Content-type:application/json’ -d '{"name": "???", "role": "???"}'
-Put the employee id, name, role to ??? sequentially.
-
-Putting movie data
+PUT Movie
 curl -X PUT http://localhost:8080/movies/??? -H 'Content-Type: application/json' -d '{"movieId": "???", "title": "???", "genre": "???"}' / good
 Put the movie id, movie id, title, genre to ??? sequentially.
 
-Putting rating data
+PUT Rating
 curl -X PUT http://localhost:8080/ratings/???/??? -H 'Content-Type: application/json' -d '???'
 Put the user id, movie id, rating to ??? sequentially. Time stamp will be calculated from now.
 
-Putting user data
+PUT User
 curl -X PUT http://localhost:8080/users/??? -H 'Content-Type: application/json' -d '{"userId": "???", "gender": "???", "age": "???", "occupation": "???", "zipcode": "???"}'
 Put the user id, user id, gender, age, occupation, zipcode to ??? sequentially.
 
-Every id should be valid and range of rating is between 1 to 5.
-If not, you will get an error message from console and client.
+Login function
+curl -X GET http://localhost:8080/users/???/???
+Put the user id, password to ??? sequentially.
 
-:::::: Belows are some example requests for part 3::::::
+Change password
+curl -X PUT http://localhost:8080/users/password/???/??? -H 'Content-Type: application/json' -d '???' / good
+Put the user id, old password, new password to ??? sequentially.
 
-Specific
+Update Info
+curl -X PUT https://localhost:8080/users/???/??? -H 'Content-Type: application/json' -d '???' // good
+Put the user id, data type, data value to ??? sequentially.
+Below are types
+gender : 'M', 'F'
+age : '1', '18', '25', '35', '45', '50', '56'
+occupation : '0' to '20'
+username : any String
+
+Adding List
+curl -X PUT https://localhost:8080/users/movielist/??? -H 'Content-Type: application/json' -d '???' // good
+Put the user id, movie list name to ??? sequentially.
+
+Adding Element
+curl -X PUT https://localhost:8080/users/movielist/???/??? -H 'Content-Type: application/json' -d '???' // good
+Put the user id, movie list name, movie id to ??? sequentially.
+
+Removing Element
+curl -X PUT https://localhost:8080/users/movielist/???/???/??? // good
+Put the user id, movie list name, index to ??? sequentially.
+
+Get Recommendation by Season
+curl -X GET http://localhost:8080/recommendation/season/???
+Put the month to ??? sequentially.
+
+Get Recommendation by Time
+curl -X GET http://localhost:8080/recommendation/time/???
+Put the hour to ??? sequentially.
+
+Get Recommendation by Movie Id
+curl -X GET http://localhost:8080/recommendation/movie/???
+Put the movie id to ??? sequentially.
+
+Get Recommendation by User Information
+curl -X GET http://localhost:8080/recommendation/info/???
+Put the user id to ??? sequentially.
+
+Get Searching
+curl -X GET http://localhost:8080/searching/1/toy?containingGenres=A&FilteringGenres=B&containingLists=C&filteringLists=D
+Each parameters can be skipped.
+A = containing genres condition.
+B = filtering genres condition.
+C = containing ids by list names condition.
+D = filtering ids by list names condition.
+
+:::::: Belows are some example requests ::::::
+
+GET Movies by Rating
 curl -X GET http://localhost:8080/ratings/0 / invalid rating range
 curl -X GET http://localhost:8080/ratings/1 / good
 curl -X GET http://localhost:8080/ratings/2 / good
@@ -144,27 +173,51 @@ Change password
 curl -X PUT http://localhost:8080/users/password/1/default_password -H 'Content-Type: application/json' -d 'root' / good
 
 Update Info
-curl -X PUT https://127.0.0.1:8080/users/1/gender -H 'Content-Type: application/json' -d 'M' // good
-curl -X PUT https://127.0.0.1:8080/users/1/gender -H 'Content-Type: application/json' -d 'A' // Incorrect Gender
-curl -X PUT https://127.0.0.1:8080/users/1/age -H 'Content-Type: application/json' -d '18' // Correct Age
-curl -X PUT https://127.0.0.1:8080/users/1/age -H 'Content-Type: application/json' -d '99999' // Incorrect Age
-curl -X PUT https://127.0.0.1:8080/users/1/occupation -H 'Content-Type: application/json' -d '12' // Correct Occupation
-curl -X PUT https://127.0.0.1:8080/users/1/occupation -H 'Content-Type: application/json' -d '99999' // Incorrect Occupation
-curl -X PUT https://127.0.0.1:8080/users/1/username -H 'Content-Type: application/json' -d 'asdasd' // Correct Username
-curl -X PUT https://127.0.0.1:8080/users/1/location -H 'Content-Type: application/json' -d 'A' // Incorrect Option
-curl -X PUT https://127.0.0.1:8080/users/99999/gender -H 'Content-Type: application/json' -d 'M' // Invalid ID
+curl -X PUT https://localhost:8080/users/1/gender -H 'Content-Type: application/json' -d 'M' // good
+curl -X PUT https://localhost:8080/users/1/gender -H 'Content-Type: application/json' -d 'A' // Incorrect Gender
+curl -X PUT https://localhost:8080/users/1/age -H 'Content-Type: application/json' -d '18' // Correct Age
+curl -X PUT https://localhost:8080/users/1/age -H 'Content-Type: application/json' -d '99999' // Incorrect Age
+curl -X PUT https://localhost:8080/users/1/occupation -H 'Content-Type: application/json' -d '12' // Correct Occupation
+curl -X PUT https://localhost:8080/users/1/occupation -H 'Content-Type: application/json' -d '99999' // Incorrect Occupation
+curl -X PUT https://localhost:8080/users/1/username -H 'Content-Type: application/json' -d 'asdasd' // Correct Username
+curl -X PUT https://localhost:8080/users/1/location -H 'Content-Type: application/json' -d 'A' // Incorrect Option
+curl -X PUT https://localhost:8080/users/99999/gender -H 'Content-Type: application/json' -d 'M' // Invalid ID
 
-Setting Movie List
 Adding List
-curl -X PUT https://127.0.0.1:8080/users/movielist/1 -H 'Content-Type: application/json' -d 'valid_list' // good
-curl -X PUT https://127.0.0.1:8080/users/movielist/99999 -H 'Content-Type: application/json' -d 'valid_list' // Invalid ID
+curl -X PUT https://localhost:8080/users/movielist/1 -H 'Content-Type: application/json' -d 'valid_list' // good
+curl -X PUT https://localhost:8080/users/movielist/99999 -H 'Content-Type: application/json' -d 'valid_list' // Invalid ID
 
 Adding Element
-curl -X PUT https://127.0.0.1:8080/users/movielist/99999/valid_list -H 'Content-Type: application/json' -d '123' // Invalid ID
-curl -X PUT https://127.0.0.1:8080/users/movielist/1/valid_list -H 'Content-Type: application/json' -d '123' // good
-curl -X PUT https://127.0.0.1:8080/users/movielist/1/invalid_list -H 'Content-Type: application/json' -d '123' // Invalid List
+curl -X PUT https://localhost:8080/users/movielist/99999/valid_list -H 'Content-Type: application/json' -d '123' // Invalid ID
+curl -X PUT https://localhost:8080/users/movielist/1/valid_list -H 'Content-Type: application/json' -d '123' // good
+curl -X PUT https://localhost:8080/users/movielist/1/invalid_list -H 'Content-Type: application/json' -d '123' // Invalid List
 
 Removing Element
-curl -X PUT https://127.0.0.1:8080/users/movielist/1/valid_list/0 // good
-curl -X PUT https://127.0.0.1:8080/users/movielist/1/valid_list/1 // Inalid Element
-curl -X PUT https://127.0.0.1:8080/users/movielist/99999/valid_list/0 // Invalid ID
+curl -X PUT https://localhost:8080/users/movielist/1/valid_list/0 // good
+curl -X PUT https://localhost:8080/users/movielist/1/valid_list/1 // Invalid Element
+curl -X PUT https://localhost:8080/users/movielist/99999/valid_list/0 // Invalid ID
+
+Get Recommendation by Season
+curl -X GET http://localhost:8080/recommendation/season/1 // good
+curl -X GET http://localhost:8080/recommendation/season/4 // good
+curl -X GET http://localhost:8080/recommendation/season/7 // good
+curl -X GET http://localhost:8080/recommendation/season/10 // good
+curl -X GET http://localhost:8080/recommendation/season/13 // Invalid Value
+
+Get Recommendation by Time
+curl -X GET http://localhost:8080/recommendation/time/3 // good
+curl -X GET http://localhost:8080/recommendation/time/9 // good
+curl -X GET http://localhost:8080/recommendation/time/15 // good
+curl -X GET http://localhost:8080/recommendation/time/21 // good
+curl -X GET http://localhost:8080/recommendation/time/25 // Invalid Value
+
+Get Recommendation by Movie Id
+curl -X GET http://localhost:8080/recommendation/movie/1 // good
+curl -X GET http://localhost:8080/recommendation/movie/9845 // Invalid Id
+
+Get Recommendation by User Information
+curl -X GET http://localhost:8080/recommendation/info/1 // good
+curl -X GET http://localhost:8080/recommendation/info/7878 // Invalid Id
+
+Get Searching
+curl -X GET http://localhost:8080/searching/1/toy?containingGenres=animation&filteringGenres=drama // good
