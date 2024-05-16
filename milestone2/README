@@ -5,127 +5,326 @@ I treat the errors for only invalid ids, and rating range.
 Every id should be valid and range of rating is between 1 to 5.
 If not, you will get an error message from console and client.
 
+
+
+Get Searching
+
+curl -X GET http://localhost:8080/searching/1/toy?containingGenres=animation&filteringGenres=drama // good
+[{"movie":{"movieId":"13","title":"Balto (1995)","genre":"Animation|Children's","keywords":["Balto","(1995)","Animation","Children's"]},"score":4.0}, ..., {"movie":{"movieId":"1566","title":"Hercules (1997)","genre":"Adventure|Animation|Children's|Comedy|Musical","keywords":["Hercules","(1997)","Adventure","Animation","Children's","Comedy","Musical"]},"score":8.0}]
+
+
 GET Movies by Rating
+
 curl -X GET http://localhost:8080/ratings/0 / invalid rating range
-curl -X GET http://localhost:8080/ratings/1 / good
-curl -X GET http://localhost:8080/ratings/2 / good
-curl -X GET http://localhost:8080/ratings/3 / good
-curl -X GET http://localhost:8080/ratings/4 / good
-curl -X GET http://localhost:8080/ratings/5 / good
+404 Error
+
+curl -X GET http://localhost:8080/ratings/1
+[{"movieId":"1","title":"Toy Story (1995)","genre":"Animation|Children's|Comedy","keywords":["Toy","Story","(1995)","Animation","Children's","Comedy"]}, ..., {"movieId":"999","title":"2 Days in the Valley (1996)","genre":"Crime","keywords":"2","Days","in","the","Valley","(1996)","Crime"]}]
+
+curl -X GET http://localhost:8080/ratings/2
+[{"movieId":"1","title":"Toy Story (1995)","genre":"Animation|Children's|Comedy","keywords":["Toy","Story","(1995)","Animation","Children's","Comedy"]}, ..., {"movieId":"999","title":"2 Days in the Valley (1996)","genre":"Crime","keywords":"2","Days","in","the","Valley","(1996)","Crime"]}]
+
+curl -X GET http://localhost:8080/ratings/3
+[{"movieId":"1","title":"Toy Story (1995)","genre":"Animation|Children's|Comedy","keywords":["Toy","Story","(1995)","Animation","Children's","Comedy"]}, ..., {"movieId":"999","title":"2 Days in the Valley (1996)","genre":"Crime","keywords":"2","Days","in","the","Valley","(1996)","Crime"]}]
+
+curl -X GET http://localhost:8080/ratings/4
+[{"movieId":"1","title":"Toy Story (1995)","genre":"Animation|Children's|Comedy","keywords":["Toy","Story","(1995)","Animation","Children's","Comedy"]}, ..., {"movieId":"994","title":"Big Night (1996)","genre":"Drama","keywords":["Big","Night","(1996)","Drama"]}]
+
+curl -X GET http://localhost:8080/ratings/5
+[{"movieId":"1830","title":"Follow the Bitch (1998)","genre":"Comedy","keywords":["Follow","the","Bitch","(1998)","Comedy"]}, ..., ,{"movieId":"989","title":"Schlafes Bruder (Brother of Sleep) (1995)","genre":"Drama","keywords":["Schlafes","Bruder","(Brother","of","Sleep)","(1995)","Drama"]}]
+
 curl -X GET http://localhost:8080/ratings/6 / invalid rating range
+404 Error
+
+
 
 GET Movie
+
 curl -X GET http://localhost:8080/movies/1 / good
+{"movieName":"Toy Story (1995)","movieGenre":"Animation|Children's|Comedy","averageRating":4.146364949446316,"ageRatio":[0.053923927,0.21569571,0.38035628,0.20365912,0.0688493,0.051998075,0.025517574],"occupationRatio":[0.12999518,0.07558979,0.041405875,0.032258064,0.1429947,0.018777082,0.036591236,0.09677419,9.629273E-4,0.016851228,0.045257583,0.016851228,0.06740491,0.008184882,0.05151661,0.026480502,0.0370727,0.080885895,0.010110737,0.012036591,0.051998075],"genderRatio":[0.715455,0.284545]}
+
 curl -X GET http://localhost:8080/movies/1234 / good
+{"movieName":"Sting, The (1973)","movieGenre":"Comedy|Crime","averageRating":4.320305052430887,"ageRatio":[0.020972354,0.08198284,0.31935176,0.27264062,0.12678741,0.11820782,0.060057197],"occupationRatio":[0.12392755,0.10104862,0.039084844,0.03145853,0.08102955,0.019065777,0.036224976,0.13060057,0.0019065777,0.018112488,0.013346043,0.029551955,0.05815062,0.022878932,0.05052431,0.02383222,0.052430887,0.077216394,0.013346043,0.014299333,0.061963774],"genderRatio":[0.75786465,0.24213536]}
+
 curl -X GET http://localhost:8080/movies/0 / invalid id
+404 Error
+
 curl -X GET http://localhost:8080/movies/5432 / invalid id
+404 Error
+
+
 
 GET Rating
 curl -X GET http://localhost:8080/ratings/1/1 / good
+{"id":"6645e16af6f83c55d273c30e","userId":"1","movieId":"1","rating":3.0,"timeStamp":"1715855783"}
+
 curl -X GET http://localhost:8080/ratings/1387/1104 / good
-curl -X GET http://localhost:8080/ratings/1/2 / invalid ids
+{"id":"6645e176f6f83c55d2774111","userId":"1387","movieId":"1104","rating":4.0,"timeStamp":"974766784"}
+
+curl -X GET http://localhost:8080/ratings/1/3 / invalid ids
+404 Error
+
 curl -X GET http://localhost:8080/ratings/2324/1963 / invalid ids
+404 Error
+
+
 
 GET User
 curl -X GET http://localhost:8080/users/1 good
+{"userId":"1","gender":"F","age":"1","occupation":"10","userName":"default_username","password":"default_password","movieList":{}}
+
 curl -X GET http://localhost:8080/users/2000 good
+{"userId":"2000","gender":"M","age":"18","occupation":"4","userName":"default_username","password":"default_password","movieList":{}}
+
 curl -X GET http://localhost:8080/users/0 invalid id
+404 Error
+
 curl -X GET http://localhost:8080/users/9876 invalid id
+404 Error
+
+
 
 POST Movie
+
 curl -X POST http://localhost:8080/movies -H 'Content-Type: application/json' -d '{"movieId": "4000", "title": "New Movie1", "genre": "Action"}' / good
+{"movieId":"4000","title":"New Movie1","genre":"Action","keywords":null}
+
 curl -X POST http://localhost:8080/movies -H 'Content-Type: application/json' -d '{"movieId": "4001", "title": "New Movie2", "genre": "Romance"}' / good
+{"movieId":"4001","title":"New Movie2","genre":"Romance","keywords":null}
+
 curl -X POST http://localhost:8080/movies -H 'Content-Type: application/json' -d '{"movieId": "1", "title": "New Movie4", "genre": "Action"}' / already exist
+404 Error
+
+
 
 POST Rating
-curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "2", "rating": "2", "timeStamp": "454544"}' / good
-curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "3", "rating": "3", "timeStamp": "123132132"}' / good
+
+curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "4", "rating": "2", "timeStamp": "454544"}' / good
+{"id":"6645e60ed24c391b7166670e","userId":"1","movieId":"4","rating":2.0,"timeStamp":"454544"}
+
+curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "6", "rating": "3", "timeStamp": "123132132"}' / good
+{"id":"6645e622d24c391b7166670f","userId":"1","movieId":"6","rating":3.0,"timeStamp":"123132132"}
+
 curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "1", "rating": "4", "timeStamp": "123132"}' / already exist
-curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "4", "rating": "0", "timeStamp": "123132"}' / invalid rating range
-curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "4", "rating": "6", "timeStamp": "123132"}' / invalid rating range
+404 Error
+
+curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "7", "rating": "0", "timeStamp": "123132"}' / invalid rating range
+404 Error
+
+curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "7", "rating": "6", "timeStamp": "123132"}' / invalid rating range
+404 Error
+
 curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "7000", "movieId": "2", "rating": "2", "timeStamp": "123132"}' / invalid ids
+404 Error
+
 curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "1", "movieId": "5000", "rating": "3", "timeStamp": "123132"}' / invalid ids
+404 Error
+
+
 
 POST User
+
 curl -X POST http://localhost:8080/users -H 'Content-Type: application/json' -d '{"userId": "8000", "gender": "F", "age": "18", "occupation": "15", "zipcode": "12345"}' / good
+{"userId":"8000","gender":"F","age":"18","occupation":"15","userName":null,"password":null,"movieList":null}
+
 curl -X POST http://localhost:8080/users -H 'Content-Type: application/json' -d '{"userId": "8001", "gender": "M", "age": "25", "occupation": "20", "zipcode": "54321"}' / good
+{"userId":"8001","gender":"M","age":"25","occupation":"20","userName":null,"password":null,"movieList":null}
+
 curl -X POST http://localhost:8080/users -H 'Content-Type: application/json' -d '{"userId": "1", "gender": "F", "age": "18", "occupation": "15", "zipcode": "12345"}' / already exist
+404 Error
+
+
 
 PUT Movie
+
 curl -X PUT http://localhost:8080/movies/1 -H 'Content-Type: application/json' -d '{"movieId": "1", "title": "New Movie77", "genre": "Action"}' / good
+{"movieId":"1","title":"New Movie77","genre":"Action","keywords":null}
+
 curl -X PUT http://localhost:8080/movies/2 -H 'Content-Type: application/json' -d '{"movieId": "2", "title": "New Movie88", "genre": "Comedy"}' / good
+{"movieId":"2","title":"New Movie88","genre":"Comedy","keywords":null}
+
 curl -X PUT http://localhost:8080/movies/40000 -H 'Content-Type: application/json' -d '{"movieId": "40000", "title": "New Movie", "genre": "Action"}' / invalid id
+404 Error
+
+
 
 PUT Rating
+
 curl -X PUT http://localhost:8080/ratings/1/1 -H 'Content-Type: application/json' -d '3' / good
+{"id":"6645e16af6f83c55d273c30e","userId":"1","movieId":"1","rating":3.0,"timeStamp":"1715857148"}
+
 curl -X PUT http://localhost:8080/ratings/1339/293 -H 'Content-Type: application/json' -d '4' / good
+{"id":"6645e175f6f83c55d2772184","userId":"1339","movieId":"293","rating":4.0,"timeStamp":"1715857158"}
+
 curl -X PUT http://localhost:8080/ratings/1/1 -H 'Content-Type: application/json' -d '0' / invalid rating range
+404 Error
+
 curl -X PUT http://localhost:8080/ratings/1339/293 -H 'Content-Type: application/json' -d '6' / invalid rating range
+404 Error
+
 curl -X PUT http://localhost:8080/ratings/88848/1 -H 'Content-Type: application/json' -d '1' / invalid ids
+404 Error
+
 curl -X PUT http://localhost:8080/ratings/5/98765 -H 'Content-Type: application/json' -d '5' / invalid ids
+404 Error
+
+
 
 PUT User
+
 curl -X PUT http://localhost:8080/users/1 -H 'Content-Type: application/json' -d '{"userId": "1", "gender": "M", "age": "35", "occupation": "11", "zipcode": "12222"}' / good
+{"userId":"1","gender":"M","age":"35","occupation":"11","userName":null,"password":null,"movieList":null}
+
 curl -X PUT http://localhost:8080/users/2 -H 'Content-Type: application/json' -d '{"userId": "2", "gender": "F", "age": "50", "occupation": "1", "zipcode": "15555"}' / good
+{"userId":"2","gender":"F","age":"50","occupation":"1","userName":null,"password":null,"movieList":null}
+
 curl -X PUT http://localhost:8080/users/45678 -H 'Content-Type: application/json' -d '{"userId": "15571", "gender": "F", "age": "50", "occupation": "2", "zipcode": "54544"}' / invalid id
+404 Error
+
+
 
 Login function
-curl -X GET http://localhost:8080/users/1/default_password / good
-curl -X GET http://localhost:8080/users/1/12348102384 / password do not match
+
+curl -X GET http://localhost:8080/users/5/default_password / good
+{"userId":"5","gender":"M","age":"25","occupation":"20","userName":"default_username","password":"default_password","movieList":{}}
+
+curl -X GET http://localhost:8080/users/5/12348102384 / password do not match
+404 Error
+
 curl -X GET http://localhost:8080/users/99999 / invalid ids
+404 Error
+
+
 
 Change password
-curl -X PUT http://localhost:8080/users/password/1/default_password -H 'Content-Type: application/json' -d 'root' / good
+
+curl -X PUT http://localhost:8080/users/password/5/default_password -H 'Content-Type: application/json' -d 'root' / good
+{"userId":"5","gender":"M","age":"25","occupation":"20","userName":"default_username","password":"root","movieList":{}}
+
+
 
 Update Info
-curl -X PUT https://localhost:8080/users/1/gender -H 'Content-Type: application/json' -d 'M' // good
-curl -X PUT https://localhost:8080/users/1/gender -H 'Content-Type: application/json' -d 'A' // Incorrect Gender
-curl -X PUT https://localhost:8080/users/1/age -H 'Content-Type: application/json' -d '18' // Correct Age
-curl -X PUT https://localhost:8080/users/1/age -H 'Content-Type: application/json' -d '99999' // Incorrect Age
-curl -X PUT https://localhost:8080/users/1/occupation -H 'Content-Type: application/json' -d '12' // Correct Occupation
-curl -X PUT https://localhost:8080/users/1/occupation -H 'Content-Type: application/json' -d '99999' // Incorrect Occupation
-curl -X PUT https://localhost:8080/users/1/username -H 'Content-Type: application/json' -d 'asdasd' // Correct Username
-curl -X PUT https://localhost:8080/users/1/location -H 'Content-Type: application/json' -d 'A' // Incorrect Option
-curl -X PUT https://localhost:8080/users/99999/gender -H 'Content-Type: application/json' -d 'M' // Invalid ID
+
+curl -X PUT http://localhost:8080/users/info/1/gender -H 'Content-Type: application/json' -d 'M' // good
+{"userId":"1","gender":"M","age":"35","occupation":"11","userName":null,"password":null,"movieList":null}
+
+curl -X PUT http://localhost:8080/users/info/1/gender -H 'Content-Type: application/json' -d 'A' // Incorrect Gender
+404 Error
+
+curl -X PUT http://localhost:8080/users/info/1/age -H 'Content-Type: application/json' -d '18' // Correct Age
+{"userId":"1","gender":"M","age":"18","occupation":"11","userName":null,"password":null,"movieList":null}
+
+curl -X PUT http://localhost:8080/users/info/1/age -H 'Content-Type: application/json' -d '99999' // Incorrect Age
+404 Error
+
+curl -X PUT http://localhost:8080/users/info/1/occupation -H 'Content-Type: application/json' -d '12' // Correct Occupation
+{"userId":"1","gender":"M","age":"18","occupation":"12","userName":null,"password":null,"movieList":null}
+
+curl -X PUT http://localhost:8080/users/info/1/occupation -H 'Content-Type: application/json' -d '99999' // Incorrect Occupation
+404 Error
+
+curl -X PUT http://localhost:8080/users/info/1/username -H 'Content-Type: application/json' -d 'asdasd' // Correct Username
+{"userId":"1","gender":"M","age":"18","occupation":"12","userName":"asdasd","password":null,"movieList":null}
+
+curl -X PUT http://localhost:8080/users/info/1/location -H 'Content-Type: application/json' -d 'A' // Incorrect Option
+404 Error
+
+curl -X PUT http://localhost:8080/users/info/99999/gender -H 'Content-Type: application/json' -d 'M' // Invalid ID
+404 Error
+
+
 
 Adding List
-curl -X PUT https://localhost:8080/users/movielist/1 -H 'Content-Type: application/json' -d 'valid_list' // good
-curl -X PUT https://localhost:8080/users/movielist/99999 -H 'Content-Type: application/json' -d 'valid_list' // Invalid ID
+
+curl -X PUT http://localhost:8080/users/movielist/5 -H 'Content-Type: application/json' -d 'valid_list' // good
+{"userId":"5","gender":"M","age":"25","occupation":"20","userName":"default_username","password":"root","movieList":{"valid_list":[]}}
+
+curl -X PUT http://localhost:8080/users/movielist/99999 -H 'Content-Type: application/json' -d 'valid_list' // Invalid ID
+404 Error
+
+
 
 Adding Element
-curl -X PUT https://localhost:8080/users/movielist/99999/valid_list -H 'Content-Type: application/json' -d '123' // Invalid ID
-curl -X PUT https://localhost:8080/users/movielist/1/valid_list -H 'Content-Type: application/json' -d '123' // good
-curl -X PUT https://localhost:8080/users/movielist/1/invalid_list -H 'Content-Type: application/json' -d '123' // Invalid List
+
+curl -X PUT http://localhost:8080/users/movielist/99999/valid_list -H 'Content-Type: application/json' -d '123' // Invalid ID
+404 Error
+
+curl -X PUT http://localhost:8080/users/movielist/5/valid_list -H 'Content-Type: application/json' -d '123' // good
+{"userId":"5","gender":"M","age":"25","occupation":"20","userName":"default_username","password":"root","movieList":{"valid_list":["123"]}}
+
+curl -X PUT http://localhost:8080/users/movielist/5/invalid_list -H 'Content-Type: application/json' -d '123' // Invalid List
+500 Error
+
+
 
 Removing Element
-curl -X PUT https://localhost:8080/users/movielist/1/valid_list/0 // good
-curl -X PUT https://localhost:8080/users/movielist/1/valid_list/1 // Invalid Element
-curl -X PUT https://localhost:8080/users/movielist/99999/valid_list/0 // Invalid ID
+
+curl -X PUT http://localhost:8080/users/movielist/5/valid_list/0 // good
+{"userId":"5","gender":"M","age":"25","occupation":"20","userName":"default_username","password":"root","movieList":{"valid_list":[]}}
+
+curl -X PUT http://localhost:8080/users/movielist/1/valid_list/1 // Invalid Element
+500 Error
+
+curl -X PUT http://localhost:8080/users/movielist/99999/valid_list/0 // Invalid ID
+404 Error
+
+
 
 Get Recommendation by Season
+
 curl -X GET http://localhost:8080/recommendation/season/1 // good
+[{"movieId":"1311","title":"Santa with Muscles (1996)","genre":"Comedy","keywords":["Santa","with","Muscles","(1996)","Comedy"]}, ..., {"movieId":"726","title":"Last Dance (1996)","genre":"Drama","keywords":["Last","Dance","(1996)","Drama"]}]
+
 curl -X GET http://localhost:8080/recommendation/season/4 // good
+[{"movieId":"1160","title":"Six of a Kind (1934)","genre":"Comedy","keywords":["Six","of","a","Kind","(1934)","Comedy"]}, ..., {"movieId":"90","title":"Journey of August King, The (1995)","genre":"Drama","keywords":["Journey","of","August","King,","The","(1995)","Drama"]}]
+
 curl -X GET http://localhost:8080/recommendation/season/7 // good
+[{"movieId":"1181","title":"Shooter, The (1995)","genre":"Action","keywords":["Shooter,","The","(1995)","Action"]}, ..., {"movieId":"854","title":"Ballad of Narayama, The (Narayama Bushiko) (1958)","genre":"Drama","keywords":["Ballad","of","Narayama,","The","(Narayama","Bushiko)","(1958)","Drama"]}]
+
 curl -X GET http://localhost:8080/recommendation/season/10 // good
+[{"movieId":"1174","title":"Grosse Fatigue (1994)","genre":"Comedy","keywords":["Grosse","Fatigue","(1994)","Comedy"]}, ..., {"movieId":"980","title":"In the Line of Duty 2 (1987)","genre":"Action","keywords":["In","the","Line","of","Duty","2","(1987)","Action"]}]
+
 curl -X GET http://localhost:8080/recommendation/season/13 // Invalid Value
+404 Error
+
+
 
 Get Recommendation by Time
+
 curl -X GET http://localhost:8080/recommendation/time/3 // good
+[{"movieId":"1002","title":"Ed's Next Move (1996)","genre":"Comedy","keywords":["Ed's","Next","Move","(1996)","Comedy"]}, ..., {"movieId":"698","title":"Delta of Venus (1994)","genre":"Drama","keywords":["Delta","of","Venus","(1994)","Drama"]}]
+
 curl -X GET http://localhost:8080/recommendation/time/9 // good
+[{"movieId":"1420","title":"Message to Love: The Isle of Wight Festival (1996)","genre":"Documentary","keywords":["Message","to","Love:","The","Isle","of","Wight","Festival","(1996)","Documentary"]}, ..., {"movieId":"98","title":"Shopping (1994)","genre":"Action|Thriller","keywords":["Shopping","(1994)","Action","Thriller"]}]
+
 curl -X GET http://localhost:8080/recommendation/time/15 // good
+[{"movieId":"1743","title":"Arguing the World (1996)","genre":"Documentary","keywords":["Arguing","the","World","(1996)","Documentary"]}, ..., {"movieId":"925","title":"Golden Earrings (1947)","genre":"Adventure|Romance","keywords":["Golden","Earrings","(1947)","Adventure","Romance"]}]
+
 curl -X GET http://localhost:8080/recommendation/time/21 // good
+[{"movieId":"1040","title":"Secret Agent, The (1996)","genre":"Drama","keywords":["Secret","Agent,","The","(1996)","Drama"]}, ..., {"movieId":"3894","title":"Solas (1999)","genre":"Drama","keywords":["Solas","(1999)","Drama"]}]
+
 curl -X GET http://localhost:8080/recommendation/time/25 // Invalid Value
+404 Error
+
+
 
 Get Recommendation by Movie Id
+
 curl -X GET http://localhost:8080/recommendation/movie/1 // good
+[{"movieId":"13","title":"Balto (1995)","genre":"Animation|Children's","keywords":["Balto","(1995)","Animation","Children's"]}, ..., {"movieId":"888","title":"Land Before Time III: The Time of the Great Giving (1995)","genre":"Animation|Children's","keywords":["Land","Before","Time","III:","The","Time","of","the","Great","Giving","(1995)","Animation","Children's"]}]
+
 curl -X GET http://localhost:8080/recommendation/movie/9845 // Invalid Id
+nothing
+
+
 
 Get Recommendation by User Information
-curl -X GET http://localhost:8080/recommendation/info/1 // good
-curl -X GET http://localhost:8080/recommendation/info/7878 // Invalid Id
 
-Get Searching
-curl -X GET http://localhost:8080/searching/1/toy?containingGenres=animation&filteringGenres=drama // good
+curl -X GET http://localhost:8080/recommendation/info/1 // good
+[{"movieId":"110","title":"Braveheart (1995)","genre":"Action|Drama|War","keywords":["Braveheart","(1995)","Action","Drama","War"]}, ..., {"movieId":"608","title":"Fargo (1996)","genre":"Crime|Drama|Thriller","keywords":["Fargo","(1996)","Crime","Drama","Thriller"]}]
+
+curl -X GET http://localhost:8080/recommendation/info/7878 // Invalid Id
+404 Error
 
 :::::: Belows are formats of requests ::::::
 
