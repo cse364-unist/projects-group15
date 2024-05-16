@@ -6,101 +6,6 @@ Every id should be valid and range of rating is between 1 to 5.
 If not, you will get an error message from console and client.
 
 GET Movies by Rating
-curl -X GET http://localhost:8080/ratings/???
-Put the target rating to ???.
-
-GET movie data (e.g. moive title, genre, user imformation who rate this movie)
-curl -X GET http://localhost:8080/movies/???
-Put the movie id to ???.
-
-GET Rating
-curl -X GET http://localhost:8080/ratings/???/???
-Put the user id, movie id to ??? sequentially.
-
-GET User
-curl -X GET http://localhost:8080/users/???
-Put the user id to ???.
-
-POST Movie
-curl -X POST http://localhost:8080/movies -H 'Content-Type: application/json' -d '{"movieId": "???", "title": "???", "genre": "???"}'
-Put the movie data to ??? to post.
-
-POST Rating
-curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "???", "movieId": "???", "rating": "???", "timeStamp": "???"}' / good
-Put the rating data to ??? to post.
-
-POST User
-curl -X POST http://localhost:8080/users -H 'Content-Type: application/json' -d '{"userId": "???", "gender": "???", "age": "???", "occupation": "???", "zipcode": "???"}'
-Put the user data to ??? to post.
-
-PUT Movie
-curl -X PUT http://localhost:8080/movies/??? -H 'Content-Type: application/json' -d '{"movieId": "???", "title": "???", "genre": "???"}' / good
-Put the movie id, movie id, title, genre to ??? sequentially.
-
-PUT Rating
-curl -X PUT http://localhost:8080/ratings/???/??? -H 'Content-Type: application/json' -d '???'
-Put the user id, movie id, rating to ??? sequentially. Time stamp will be calculated from now.
-
-PUT User
-curl -X PUT http://localhost:8080/users/??? -H 'Content-Type: application/json' -d '{"userId": "???", "gender": "???", "age": "???", "occupation": "???", "zipcode": "???"}'
-Put the user id, user id, gender, age, occupation, zipcode to ??? sequentially.
-
-Login function
-curl -X GET http://localhost:8080/users/???/???
-Put the user id, password to ??? sequentially.
-
-Change password
-curl -X PUT http://localhost:8080/users/password/???/??? -H 'Content-Type: application/json' -d '???' / good
-Put the user id, old password, new password to ??? sequentially.
-
-Update Info
-curl -X PUT https://localhost:8080/users/???/??? -H 'Content-Type: application/json' -d '???' // good
-Put the user id, data type, data value to ??? sequentially.
-Below are types
-gender : 'M', 'F'
-age : '1', '18', '25', '35', '45', '50', '56'
-occupation : '0' to '20'
-username : any String
-
-Adding List
-curl -X PUT https://localhost:8080/users/movielist/??? -H 'Content-Type: application/json' -d '???' // good
-Put the user id, movie list name to ??? sequentially.
-
-Adding Element
-curl -X PUT https://localhost:8080/users/movielist/???/??? -H 'Content-Type: application/json' -d '???' // good
-Put the user id, movie list name, movie id to ??? sequentially.
-
-Removing Element
-curl -X PUT https://localhost:8080/users/movielist/???/???/??? // good
-Put the user id, movie list name, index to ??? sequentially.
-
-Get Recommendation by Season
-curl -X GET http://localhost:8080/recommendation/season/???
-Put the month to ??? sequentially.
-
-Get Recommendation by Time
-curl -X GET http://localhost:8080/recommendation/time/???
-Put the hour to ??? sequentially.
-
-Get Recommendation by Movie Id
-curl -X GET http://localhost:8080/recommendation/movie/???
-Put the movie id to ??? sequentially.
-
-Get Recommendation by User Information
-curl -X GET http://localhost:8080/recommendation/info/???
-Put the user id to ??? sequentially.
-
-Get Searching
-curl -X GET http://localhost:8080/searching/1/toy?containingGenres=A&FilteringGenres=B&containingLists=C&filteringLists=D
-Each parameters can be skipped.
-A = containing genres condition.
-B = filtering genres condition.
-C = containing ids by list names condition.
-D = filtering ids by list names condition.
-
-:::::: Belows are some example requests ::::::
-
-GET Movies by Rating
 curl -X GET http://localhost:8080/ratings/0 / invalid rating range
 curl -X GET http://localhost:8080/ratings/1 / good
 curl -X GET http://localhost:8080/ratings/2 / good
@@ -221,3 +126,98 @@ curl -X GET http://localhost:8080/recommendation/info/7878 // Invalid Id
 
 Get Searching
 curl -X GET http://localhost:8080/searching/1/toy?containingGenres=animation&filteringGenres=drama // good
+
+:::::: Belows are formats of requests ::::::
+
+GET Movies by Rating
+curl -X GET http://localhost:8080/ratings/???
+Put the target rating to ???.
+
+GET movie data (e.g. moive title, genre, user imformation who rate this movie)
+curl -X GET http://localhost:8080/movies/???
+Put the movie id to ???.
+
+GET Rating
+curl -X GET http://localhost:8080/ratings/???/???
+Put the user id, movie id to ??? sequentially.
+
+GET User
+curl -X GET http://localhost:8080/users/???
+Put the user id to ???.
+
+POST Movie
+curl -X POST http://localhost:8080/movies -H 'Content-Type: application/json' -d '{"movieId": "???", "title": "???", "genre": "???"}'
+Put the movie data to ??? to post.
+
+POST Rating
+curl -X POST http://localhost:8080/ratings -H 'Content-Type: application/json' -d '{"userId": "???", "movieId": "???", "rating": "???", "timeStamp": "???"}' / good
+Put the rating data to ??? to post.
+
+POST User
+curl -X POST http://localhost:8080/users -H 'Content-Type: application/json' -d '{"userId": "???", "gender": "???", "age": "???", "occupation": "???", "zipcode": "???"}'
+Put the user data to ??? to post.
+
+PUT Movie
+curl -X PUT http://localhost:8080/movies/??? -H 'Content-Type: application/json' -d '{"movieId": "???", "title": "???", "genre": "???"}' / good
+Put the movie id, movie id, title, genre to ??? sequentially.
+
+PUT Rating
+curl -X PUT http://localhost:8080/ratings/???/??? -H 'Content-Type: application/json' -d '???'
+Put the user id, movie id, rating to ??? sequentially. Time stamp will be calculated from now.
+
+PUT User
+curl -X PUT http://localhost:8080/users/??? -H 'Content-Type: application/json' -d '{"userId": "???", "gender": "???", "age": "???", "occupation": "???", "zipcode": "???"}'
+Put the user id, user id, gender, age, occupation, zipcode to ??? sequentially.
+
+Login function
+curl -X GET http://localhost:8080/users/???/???
+Put the user id, password to ??? sequentially.
+
+Change password
+curl -X PUT http://localhost:8080/users/password/???/??? -H 'Content-Type: application/json' -d '???' / good
+Put the user id, old password, new password to ??? sequentially.
+
+Update Info
+curl -X PUT https://localhost:8080/users/???/??? -H 'Content-Type: application/json' -d '???' // good
+Put the user id, data type, data value to ??? sequentially.
+Below are types
+gender : 'M', 'F'
+age : '1', '18', '25', '35', '45', '50', '56'
+occupation : '0' to '20'
+username : any String
+
+Adding List
+curl -X PUT https://localhost:8080/users/movielist/??? -H 'Content-Type: application/json' -d '???' // good
+Put the user id, movie list name to ??? sequentially.
+
+Adding Element
+curl -X PUT https://localhost:8080/users/movielist/???/??? -H 'Content-Type: application/json' -d '???' // good
+Put the user id, movie list name, movie id to ??? sequentially.
+
+Removing Element
+curl -X PUT https://localhost:8080/users/movielist/???/???/??? // good
+Put the user id, movie list name, index to ??? sequentially.
+
+Get Recommendation by Season
+curl -X GET http://localhost:8080/recommendation/season/???
+Put the month to ??? sequentially.
+
+Get Recommendation by Time
+curl -X GET http://localhost:8080/recommendation/time/???
+Put the hour to ??? sequentially.
+
+Get Recommendation by Movie Id
+curl -X GET http://localhost:8080/recommendation/movie/???
+Put the movie id to ??? sequentially.
+
+Get Recommendation by User Information
+curl -X GET http://localhost:8080/recommendation/info/???
+Put the user id to ??? sequentially.
+
+Get Searching
+curl -X GET http://localhost:8080/searching/1/toy?containingGenres=A&FilteringGenres=B&containingLists=C&filteringLists=D
+Each parameters can be skipped.
+A = containing genres condition.
+B = filtering genres condition.
+C = containing ids by list names condition.
+D = filtering ids by list names condition.
