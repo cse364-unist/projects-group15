@@ -122,26 +122,29 @@ public class AppTest {
     }
     @Test
     public void testAddNewUserInvalid() {
-        RestTemplate restTemplate = new RestTemplate();
+        // Assuming "1" is an existing userId in the database
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("userId", "1");
-        map.add("username", "default_username");
-        map.add("password", "default_password");
-        map.add("gender", "F");
-        map.add("age", "1");
-        map.add("occupation", "10");
+        map.add("userId", "1");  // Duplicate userId
+        map.add("username", "newUser");
+        map.add("password", "newPassword");
+        map.add("gender", "M");
+        map.add("age", "25");
+        map.add("occupation", "5");
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
+        // Send the POST request
+        ResponseEntity<User> response = restTemplate.postForEntity(
                 "http://localhost:" + port + "/users",
-                HttpMethod.PUT,
                 request,
-                String.class);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 NOT FOUND status");
+                User.class
+        );
+
+        // Check for HTTP Status 409 CONFLICT or similar status indicating a conflict/error
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode(), "Expected 409 CONFLICT status due to duplicate userId");
     }
     @Test
     public void testUpdateMovieValid() {
