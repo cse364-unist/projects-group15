@@ -98,6 +98,10 @@ public class AppTest {
     }
     @Test
     public void testAddNewUserValid() {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("userId", "9898");
         map.add("username", "default_username");
@@ -106,12 +110,18 @@ public class AppTest {
         map.add("age", "1");
         map.add("occupation", "10");
 
-        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port + "/user", map, User.class);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:8080/users", request, User.class);
         User user2 = response.getBody();
         assertEquals("9898", user2.getUserId(), "User id does not match");
     }
     @Test
     public void testAddNewUserInvalid() {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("userId", "1");
         map.add("username", "default_username");
@@ -120,7 +130,10 @@ public class AppTest {
         map.add("age", "1");
         map.add("occupation", "10");
 
-        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port + "/user", map, User.class);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:8080/users", request, User.class);
+
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 NOT FOUND status");
     }
     @Test
