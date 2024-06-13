@@ -115,7 +115,7 @@ public class AppTest {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:8080/users", request, User.class);
+        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port + "/users", request, User.class);
         User user2 = response.getBody();
         assertEquals("9898", user2.getUserId(), "User id does not match");
     }
@@ -135,7 +135,7 @@ public class AppTest {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:8080/users", request, User.class);
+        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port + "/users", request, User.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 NOT FOUND status");
     }
