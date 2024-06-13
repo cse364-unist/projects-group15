@@ -36,6 +36,5 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /root/project
 COPY run.sh .
+CMD ["/bin/bash"]
 RUN chmod +x run.sh
-RUN mkdir milestone3
-COPY milestone3 milestone3
