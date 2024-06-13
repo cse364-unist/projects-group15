@@ -112,7 +112,7 @@ public class AppTest {
     }
     @Test
     public void testAddNewUserInvalid() {
-        MultiValue ProMap<String, String> map = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("userId", "1");
         map.add("username", "default_username");
         map.add("password", "default_password");
