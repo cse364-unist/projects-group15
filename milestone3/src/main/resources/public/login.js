@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $('#login-form').submit(function(event) {
         event.preventDefault();
-        const username = $('#username').val();
+        const userId = $('#userId').val();
         const password = $('#password').val();
         const myUrl = 'http://localhost:8080/users/' + username + "/" + password
 

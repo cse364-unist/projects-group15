@@ -1,12 +1,13 @@
 $(document).ready(function() {
     $('#register-form').submit(function(event) {
         event.preventDefault();
-        const username = $('#username').val();
-        const password = $('#password').val();
+        const userId = $('#userId').val();
         const gender = $('#gender').val();
         const age = convertAgeToCategory($('#age').val());
         const occupation = $('#occupation').val();
-        const myUrl = `http://localhost:8080/addNewUser?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&gender=${gender}&age=${age}&occupation=${occupation}`;
+        const username = $('#username').val();
+        const password = $('#password').val();
+        const myUrl = `http://localhost:8080/addNewUser?userId=${encodeURIComponent(userId)}username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&gender=${gender}&age=${age}&occupation=${occupation}`;
 
         // 서버에 회원가입 요청 보내기
         $.ajax({

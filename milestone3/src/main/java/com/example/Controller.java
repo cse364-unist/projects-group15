@@ -154,7 +154,7 @@ public class Controller {
         HashMap<String, List<String>> emptyMovieList = new HashMap<>();
 
         // User 객체 생성, movieList 포함
-        User user = new User(username, password, gender, age, occupation, emptyMovieList);
+        User user = new User(userId, gender, age, occupation, username, password, emptyMovieList);
 
             // 사용자 ID 중복 검사
         if (userDAL.checkUserIdExists(user.getUserId()))
