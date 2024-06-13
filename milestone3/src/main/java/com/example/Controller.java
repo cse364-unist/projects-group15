@@ -144,6 +144,7 @@ public class Controller {
     }
     @RequestMapping(value = "/users", method = RequestMethod.POST)
     public User addNewUser(
+            @RequestParam String userId,
             @RequestParam String username,
             @RequestParam String password,
             @RequestParam String gender,
