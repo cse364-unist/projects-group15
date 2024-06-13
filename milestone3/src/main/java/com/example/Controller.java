@@ -161,7 +161,6 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         else
             return userRepository.save(user);
-        }
     }
 
     @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.PUT)
