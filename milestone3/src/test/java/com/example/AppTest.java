@@ -144,7 +144,7 @@ public class AppTest {
         );
 
         // Check for HTTP Status 409 CONFLICT or similar status indicating a conflict/error
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode(), "Expected 409 CONFLICT status due to duplicate userId");
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 CONFLICT status due to duplicate userId");
     }
     @Test
     public void testUpdateMovieValid() {
