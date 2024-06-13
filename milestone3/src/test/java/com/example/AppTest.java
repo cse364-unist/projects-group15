@@ -98,15 +98,29 @@ public class AppTest {
     }
     @Test
     public void testAddNewUserValid() {
-        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port +
-                "/user?userId=9898&username=default_username&password=default_password&gender=F&age=1&occupation=10",User.class);
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("userId", "9898");
+        map.add("username", "default_username");
+        map.add("password", "default_password");
+        map.add("gender", "F");
+        map.add("age", "1");
+        map.add("occupation", "10");
+
+        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port + "/user", map, User.class);
         User user2 = response.getBody();
         assertEquals("9898", user2.getUserId(), "User id does not match");
     }
     @Test
     public void testAddNewUserInvalid() {
-        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port +
-                "/user?userId=1&username=default_username&password=default_password&gender=F&age=1&occupation=10",User.class);
+        MultiValue ProMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("userId", "1");
+        map.add("username", "default_username");
+        map.add("password", "default_password");
+        map.add("gender", "F");
+        map.add("age", "1");
+        map.add("occupation", "10");
+
+        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port + "/user", map, User.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 NOT FOUND status");
     }
     @Test
