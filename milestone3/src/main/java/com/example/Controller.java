@@ -143,12 +143,27 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
     }
     @RequestMapping(value = "/users", method = RequestMethod.POST)
-    public User addNewUser(@RequestBody User user) {
+    public User addNewUser(
+            @RequestParam String username,
+            @RequestParam String password,
+            @RequestParam String gender,
+            @RequestParam String age,
+            @RequestParam String occupation) {
+
+        // movieList를 빈 HashMap으로 초기화
+        HashMap<String, List<String>> emptyMovieList = new HashMap<>();
+
+        // User 객체 생성, movieList 포함
+        User user = new User(username, password, gender, age, occupation, emptyMovieList);
+
+            // 사용자 ID 중복 검사
         if (userDAL.checkUserIdExists(user.getUserId()))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         else
             return userRepository.save(user);
+        }
     }
+
     @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.PUT)
     public Movie updateMovie(@RequestBody Movie movie, @PathVariable String movieId) {
         if (movieDAL.checkMovieIdExists(movieId)){
