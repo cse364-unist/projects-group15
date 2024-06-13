@@ -12,6 +12,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -135,9 +136,13 @@ public class AppTest {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port + "/users", request, User.class);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 NOT FOUND status");
+        try {
+            ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port + "/users", request, User.class);
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 NOT FOUND status");
+        } catch (HttpClientErrorException e) {
+            System.out.println("Response error: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            throw e;
+        }
     }
     @Test
     public void testUpdateMovieValid() {
