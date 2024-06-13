@@ -136,9 +136,12 @@ public class AppTest {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/users", request, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(
+                "http://localhost:" + port + "/users",
+                HttpMethod.PUT,
+                request,
+                String.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 NOT FOUND status");
-
     }
     @Test
     public void testUpdateMovieValid() {
