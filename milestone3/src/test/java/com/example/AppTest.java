@@ -99,14 +99,14 @@ public class AppTest {
     @Test
     public void testAddNewUserValid() {
         ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port +
-                "/user?userId=9898&username=default_username&password=default_password&gender=F&age=1&occupation=10", User.class);
+                "/user?userId=9898&username=default_username&password=default_password&gender=F&age=1&occupation=10",User.class);
         User user2 = response.getBody();
         assertEquals("9898", user2.getUserId(), "User id does not match");
     }
     @Test
     public void testAddNewUserInvalid() {
         ResponseEntity<User> response = restTemplate.postForEntity("http://localhost:" + port +
-                "/user?userId=1&username=default_username&password=default_password&gender=F&age=1&occupation=10", User.class);
+                "/user?userId=1&username=default_username&password=default_password&gender=F&age=1&occupation=10",User.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 NOT FOUND status");
     }
     @Test
