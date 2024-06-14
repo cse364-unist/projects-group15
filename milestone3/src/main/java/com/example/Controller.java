@@ -18,7 +18,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/")
 public class Controller {
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -40,8 +39,8 @@ public class Controller {
         this.ratingDAL = ratingDAL;
         this.userDAL = userDAL;
     }
-    @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.GET)
-    public getMovieDTO getMovie(@PathVariable String movieId) {
+    @GetMapping("/movies")
+    public getMovieDTO getMovie(@RequestParam String movieId) {
 
         if(movieDAL.checkMovieIdExists(movieId)){
 
@@ -110,26 +109,26 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
-    @RequestMapping(value = "/ratings/{userId}/{movieId}", method = RequestMethod.GET)
+    @GetMapping("/ratings/{userId}/{movieId}")
     public Rating getRating(@PathVariable String userId, @PathVariable String movieId) {
         if (ratingDAL.checkUserIdAndMovieIdExist(userId, movieId))
             return ratingDAL.getRating(userId, movieId);
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
     }
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.GET)
+    @GetMapping("/users/{userId}")
     public User getUser(@PathVariable String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id"));
     }
-    @RequestMapping(value = "/movies", method = RequestMethod.POST)
+    @PostMapping("/movies")
     public Movie addNewMovie(@RequestBody Movie movie) {
         if (movieDAL.checkMovieIdExists(movie.getMovieId()))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         else
             return movieRepository.save(movie);
     }
-    @RequestMapping(value = "/ratings", method = RequestMethod.POST)
+    @PostMapping("/ratings")
     public Rating addNewRating(@RequestBody Rating rating) {
         if (rating.getRating() >= 1 && rating.getRating() <= 5) {
             if (ratingDAL.checkUserIdAndMovieIdExist(rating.getUserId(), rating.getMovieId()) ||
@@ -142,7 +141,7 @@ public class Controller {
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
     }
-    @RequestMapping(value = "/users", method = RequestMethod.POST)
+    @PostMapping("/users")
     public User addNewUser(
             @RequestParam String userId,
             @RequestParam String username,
@@ -301,6 +300,7 @@ public class Controller {
     @RequestMapping(value = "/users/{userId}/{password}", method = RequestMethod.GET)
     public User passwordMatch(@PathVariable String userId, @PathVariable String password) {
         if (userDAL.checkUserIdExists(userId)) {
+            System.out.println("hi");
             Optional<User> optUser = userRepository.findById(userId);
             User user = optUser.get();
 

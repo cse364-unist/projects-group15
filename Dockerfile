@@ -33,8 +33,12 @@ RUN apt-get update \
     maven \
     curl \
     git \
-    && rm -rf /var/lib/apt/lists/*
+    && wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.89/bin/apache-tomcat-9.0.89.tar.gz \
+    && tar -xzf apache-tomcat-9.0.89.tar.gz -C /opt \
+    && mv /opt/apache-tomcat-9.0.89 /opt/tomcat \
+    && rm -rf /var/lib/apt/lists/* /apache-tomcat-9.0.89.tar.gz
 WORKDIR /root/project
+COPY milestone3 ./milestone3
 COPY run.sh .
-CMD ["/bin/bash"]
 RUN chmod +x run.sh
+CMD ["/bin/bash", "run.sh"]

@@ -29,7 +29,7 @@ public class AppTest {
     @Test
     public void testGetMovieValid() {
         ResponseEntity<getMovieDTO> response = restTemplate.exchange(
-                "http://localhost:" + port + "/movies/3",
+                "http://localhost:" + port + "/movies?movieId=3",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<getMovieDTO>() {
@@ -41,7 +41,7 @@ public class AppTest {
     @Test
     public void testGetMovieInvalid() {
         ResponseEntity<getMovieDTO> response = restTemplate.exchange(
-                "http://localhost:" + port + "/movies/12345",
+                "http://localhost:" + port + "/movies?movieId=12345",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<getMovieDTO>() {}
