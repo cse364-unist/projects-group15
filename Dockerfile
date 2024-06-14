@@ -41,4 +41,5 @@ WORKDIR /root/project
 COPY milestone3 ./milestone3
 COPY run.sh .
 RUN chmod +x run.sh
+EXPOSE 8080
 CMD ["/bin/bash", "run.sh"]

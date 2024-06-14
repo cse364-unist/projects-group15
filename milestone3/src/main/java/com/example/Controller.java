@@ -9,10 +9,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,7 +38,7 @@ public class Controller {
         this.ratingDAL = ratingDAL;
         this.userDAL = userDAL;
     }
-    @GetMapping("/movies")
+    @GetMapping("/getMovie")
     public getMovieDTO getMovie(@RequestParam String movieId) {
 
         if(movieDAL.checkMovieIdExists(movieId)){
@@ -109,27 +108,27 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         }
     }
-    @GetMapping("/ratings/{userId}/{movieId}")
-    public Rating getRating(@PathVariable String userId, @PathVariable String movieId) {
+    @GetMapping("/getRating")
+    public Rating getRating(@RequestParam String userId, @RequestParam String movieId) {
         if (ratingDAL.checkUserIdAndMovieIdExist(userId, movieId))
             return ratingDAL.getRating(userId, movieId);
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
     }
-    @GetMapping("/users/{userId}")
-    public User getUser(@PathVariable String userId) {
+    @GetMapping("/getUser")
+    public User getUser(@RequestParam String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id"));
     }
-    @PostMapping("/movies")
-    public Movie addNewMovie(@RequestBody Movie movie) {
+    @PostMapping("/addNewMovie")
+    public Movie addNewMovie(@RequestParam Movie movie) {
         if (movieDAL.checkMovieIdExists(movie.getMovieId()))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
         else
             return movieRepository.save(movie);
     }
     @PostMapping("/ratings")
-    public Rating addNewRating(@RequestBody Rating rating) {
+    public Rating addNewRating(@RequestParam Rating rating) {
         if (rating.getRating() >= 1 && rating.getRating() <= 5) {
             if (ratingDAL.checkUserIdAndMovieIdExist(rating.getUserId(), rating.getMovieId()) ||
                     !userDAL.checkUserIdExists(rating.getUserId()) ||
@@ -163,8 +162,8 @@ public class Controller {
             return userRepository.save(user);
     }
 
-    @RequestMapping(value = "/movies/{movieId}", method = RequestMethod.PUT)
-    public Movie updateMovie(@RequestBody Movie movie, @PathVariable String movieId) {
+    @PutMapping("/updateMovie")
+    public Movie updateMovie(@RequestParam Movie movie, @RequestParam String movieId) {
         if (movieDAL.checkMovieIdExists(movieId)){
             Movie updatedMovie = movieRepository.save(movie);
             return updatedMovie;
@@ -172,8 +171,8 @@ public class Controller {
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
     }
-    @RequestMapping(value = "/ratings/{userId}/{movieId}", method = RequestMethod.PUT)
-    public Rating updateRating(@RequestBody String rating, @PathVariable String userId, @PathVariable String movieId) {
+    @PutMapping("/updateRating")
+    public Rating updateRating(@RequestParam String rating, @RequestParam String userId, @RequestParam String movieId) {
         double doubleRating = Double.parseDouble(rating);
         if (doubleRating >= 1 && doubleRating <= 5) {
             if (ratingDAL.checkUserIdAndMovieIdExist(userId, movieId)) {
@@ -189,23 +188,23 @@ public class Controller {
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
     }
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
-    public User updateUser(@RequestBody User user, @PathVariable String userId) {
+    @PutMapping("/updateUser")
+    public User updateUser(@RequestParam User user, @RequestParam String userId) {
         if (userDAL.checkUserIdExists(userId) && Objects.equals(user.getUserId(), userId))
             return userRepository.save(user);
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
     }
-    @RequestMapping(value = "/ratings/{rating}", method = RequestMethod.GET)
-    public List<Movie> getMoviesByRating(@PathVariable String rating) {
+    @GetMapping("/getMoviesByRating")
+    public List<Movie> getMoviesByRating(@RequestParam String rating) {
         double doubleRating = Double.parseDouble(rating);
         if (doubleRating >= 1 && doubleRating <= 5)
             return movieDAL.getMovieInfosByMovieId(ratingDAL.getMovieIdsByRating(doubleRating));
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
     }
-    @RequestMapping(value = "/recommendation/movie/{movieId}", method = RequestMethod.GET)
-    public List<Movie> getRecommendationByMovieId(@PathVariable String movieId) {
+    @GetMapping("/getRecommendationByMovieId")
+    public List<Movie> getRecommendationByMovieId(@RequestParam String movieId) {
         HashMap<String, Integer> counter = new HashMap<>();
         int countMovieId = 0;
         for (UserMovies userMovies : associations) {
@@ -230,8 +229,8 @@ public class Controller {
                 .toList());
     }
 
-    @RequestMapping(value = "/recommendation/info/{userId}", method = RequestMethod.GET)
-    public List<Movie> getRecommendationByInfo(@PathVariable String userId) {
+    @GetMapping("/getRecommendationByInfo")
+    public List<Movie> getRecommendationByInfo(@RequestParam String userId) {
         if (userDAL.checkUserIdExists(userId)) {
             Optional<User> optUser = userRepository.findById(userId);
             User user = optUser.get();
@@ -265,8 +264,8 @@ public class Controller {
         }
     }
 
-    @RequestMapping(value = "/recommendation/season/{month}", method = RequestMethod.GET)
-    public List<Movie> getRecommendationBySeason(@PathVariable String month) {
+    @GetMapping("/getRecommendationBySeason")
+    public List<Movie> getRecommendationBySeason(@RequestParam String month) {
         int monthNumber = Integer.parseInt(month);
         if (Set.of(1, 2, 12).contains(monthNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationWinter());
@@ -280,8 +279,8 @@ public class Controller {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid value");
     }
 
-    @RequestMapping(value = "/recommendation/time/{hour}", method = RequestMethod.GET)
-    public List<Movie> getRecommendationByTime(@PathVariable String hour) {
+    @GetMapping("/getRecommendationByTime")
+    public List<Movie> getRecommendationByTime(@RequestParam String hour) {
         int hourNumber = Integer.parseInt(hour);
         if (Set.of(1, 2, 3, 4, 5, 6).contains(hourNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationDawn());
@@ -297,8 +296,8 @@ public class Controller {
 
     // Bookmark function
     // Password match
-    @RequestMapping(value = "/users/{userId}/{password}", method = RequestMethod.GET)
-    public User passwordMatch(@PathVariable String userId, @PathVariable String password) {
+    @GetMapping("/passwordMatch")
+    public User passwordMatch(@RequestParam String userId, @RequestParam String password) {
         if (userDAL.checkUserIdExists(userId)) {
             System.out.println("hi");
             Optional<User> optUser = userRepository.findById(userId);
@@ -315,8 +314,8 @@ public class Controller {
     }
 
     // Update password
-    @RequestMapping(value = "/users/password/{userId}/{passwordOld}", method = RequestMethod.PUT)
-    public User changeUserPassword(@RequestBody String passwordNew, @PathVariable String userId, @PathVariable String passwordOld) {
+    @PutMapping("/changeUserPassword")
+    public User changeUserPassword(@RequestParam String passwordNew, @RequestParam String userId, @RequestParam String passwordOld) {
         if (userDAL.checkUserIdExists(userId)) {
             User user = userRepository.findById(userId).get();
 
@@ -334,8 +333,8 @@ public class Controller {
     }
 
     // Update info
-    @RequestMapping(value = "/users/info/{userId}/{type}", method = RequestMethod.PUT)
-    public User changeUserInfo(@RequestBody String value, @PathVariable String userId, @PathVariable String type) {
+    @PutMapping("changeUserInfo")
+    public User changeUserInfo(@RequestParam String value, @RequestParam String userId, @RequestParam String type) {
         if (userDAL.checkUserIdExists(userId)) {
             User updateUser = userRepository.findById(userId).get();
 
@@ -377,7 +376,7 @@ public class Controller {
     }
 
     // Setting movie list
-    @RequestMapping(value = "/users/movielist/{userId}", method = RequestMethod.PUT)
+    @PutMapping("/addMovieList")
     public User addMovieList(@RequestBody String listname, @PathVariable String userId) {
         if (userDAL.checkUserIdExists(userId)) {
             User updateUser = userRepository.findById(userId).get();
@@ -390,8 +389,8 @@ public class Controller {
         }
     }
 
-    @RequestMapping(value = "users/movielist/{userId}/{listname}", method = RequestMethod.PUT)
-    public User addElementToMovieList(@RequestBody String element, @PathVariable String userId, @PathVariable String listname) {
+    @PutMapping("/addElementToMovieList")
+    public User addElementToMovieList(@RequestParam String element, @RequestParam String userId, @RequestParam String listname) {
         if (userDAL.checkUserIdExists(userId)) {
             User updateUser = userRepository.findById(userId).get();
             HashMap<String, List<String>> updateList = updateUser.getMovieList();
@@ -404,8 +403,8 @@ public class Controller {
         }
     }
 
-    @RequestMapping(value = "/users/movielist/{userId}/{listname}/{index}", method = RequestMethod.PUT)
-    public User removeElementFromMovieList(@PathVariable String userId, @PathVariable String listname, @PathVariable String index) {
+    @PutMapping("/removeElementFromMovieList")
+    public User removeElementFromMovieList(@RequestParam String userId, @RequestParam String listname, @RequestParam String index) {
         if (userDAL.checkUserIdExists(userId)) {
             int intIndex = Integer.parseInt(index);
             User updateUser = userRepository.findById(userId).get();
@@ -419,9 +418,9 @@ public class Controller {
         }
     }
 
-    @RequestMapping(value = "/searching/{userId}/{line}", method = RequestMethod.GET)
-    public List<SearchDTO> getSearching(@PathVariable String userId,
-                                     @PathVariable String line,
+    @GetMapping("/searching/{userId}/{line}")
+    public List<SearchDTO> getSearching(@RequestParam String userId,
+                                     @RequestParam String line,
                                      @RequestParam(name = "containingGenres", required = false, defaultValue = "") String containingGenres,
                                      @RequestParam(name = "filteringGenres", required = false, defaultValue = "") String filteringGenres,
                                      @RequestParam(name = "containingLists", required = false, defaultValue = "") String containingLists,
