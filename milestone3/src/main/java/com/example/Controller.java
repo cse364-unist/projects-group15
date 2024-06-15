@@ -419,7 +419,7 @@ public class Controller {
         }
     }
 
-    @GetMapping("/searching/{userId}/{line}")
+    @GetMapping("getSearching")
     public List<SearchDTO> getSearching(@RequestParam String userId,
                                      @RequestParam String line,
                                      @RequestParam(name = "containingGenres", required = false, defaultValue = "") String containingGenres,
