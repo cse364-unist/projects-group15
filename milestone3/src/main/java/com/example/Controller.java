@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.time.Instant;
 import java.util.*;
@@ -140,7 +139,7 @@ public class Controller {
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
     }
-    @PostMapping("/users")
+    @PostMapping("/addNewUser")
     public User addNewUser(
             @RequestParam String userId,
             @RequestParam String username,
@@ -282,7 +281,7 @@ public class Controller {
     @GetMapping("/getRecommendationByTime")
     public List<Movie> getRecommendationByTime(@RequestParam String hour) {
         int hourNumber = Integer.parseInt(hour);
-        if (Set.of(1, 2, 3, 4, 5, 6).contains(hourNumber))
+        if (Set.of(0, 1, 2, 3, 4, 5, 6).contains(hourNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationDawn());
         else if (Set.of(7, 8, 9, 10, 11, 12).contains(hourNumber))
             return movieDAL.getMovieInfosByMovieId(ratingRepository.getRecommendationMorning());
@@ -296,7 +295,9 @@ public class Controller {
 
     // Bookmark function
     // Password match
+    @CrossOrigin("http://localhost:8080")
     @GetMapping("/passwordMatch")
+    @ResponseBody
     public User passwordMatch(@RequestParam String userId, @RequestParam String password) {
         if (userDAL.checkUserIdExists(userId)) {
             System.out.println("hi");

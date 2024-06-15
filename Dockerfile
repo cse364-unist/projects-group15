@@ -33,10 +33,10 @@ RUN apt-get update \
     maven \
     curl \
     git \
-    && wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.89/bin/apache-tomcat-9.0.89.tar.gz \
-    && tar -xzf apache-tomcat-9.0.89.tar.gz -C /opt \
-    && mv /opt/apache-tomcat-9.0.89 /opt/tomcat \
-    && rm -rf /var/lib/apt/lists/* /apache-tomcat-9.0.89.tar.gz
+    && wget https://downloads.apache.org/tomcat/tomcat-10/v10.1.24/bin/apache-tomcat-10.1.24.tar.gz \
+    && tar -xzf apache-tomcat-10.1.24.tar.gz -C /opt \
+    && mv /opt/apache-tomcat-10.1.24 /opt/tomcat \
+    && rm -rf /var/lib/apt/lists/* /apache-tomcat-10.1.24.tar.gz
 WORKDIR /root/project
 COPY milestone3 ./milestone3
 COPY run.sh .
