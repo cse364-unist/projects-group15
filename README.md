@@ -55,3 +55,45 @@ The movie recommendation page has similar layout with movie visulalization searc
 The application uses mongodb for database, the data of the db is stroed in dictionary type. For server, the application uses spring boot framework. When users press certain buttons, then the HTTP request is sent into the server. The server will evaluate and perform actions by java files, such as manipulation of data, finding search results... Then it will send the result by HTTP response. The web page will do actions like displaying visualized reviews, displaying bookmarks or movies when they received HTTP response.
 
 ## 4. How to use
+
+### 1. Creating an Account
+
+1. Go to sign up page.
+2. Enter username, age, gender, occupation, zipcode, password and password confirm.
+3. Press the sign up button (Password and password check should be equal)
+
+### 2. Log in
+
+1. Go to log in page.
+2. Enter username and password.
+3. Press the log in button.
+
+### 3. Changing user information
+
+1. Go to user info page.
+2. Fill the form to change information.
+3. Press the submit button.
+
+### 4. Viewing review data
+
+1. In the main page, there is a textbox and search button.
+2. Enter the keyword in text button.
+3. Press the search button.
+4. Advanced options : There are filters below the search textbox and the button. Users can check the checkbox to filter the movies by genres
+5. The searched movies will be appeared.
+6. Recommended movies will bo appeared below the searched movies.
+
+### 5. Bookmark page.
+
+1. Press + button to add the bookmark.
+2. The new bookmark block will be appeared.
+3. Press + button inside the block to add the movie.
+4. Press - button next to the title of the movie to delete the movie.
+5. Press - button next to the title of the bookmark to delete the bookmark.
+
+### 6. Movie Details
+
+1. The details of the movies are viewed.
+2. Users can view the bar or pie chart of the reviews.
+3. There is the review writing section and submit button. users can submit the reviews.
+4. There is adding to bookmark button below the review submit section, users can add the movie into the bookmark.
