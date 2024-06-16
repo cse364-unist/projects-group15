@@ -232,7 +232,7 @@ $(document).ready(function() {
             const userMovieList = JSON.parse(localStorage.getItem("userMovieList"))
             for (let listName in userMovieList) {
                 $('#selected-list-options').append(`
-                    <label><input type="checkbox" name="selected-lists" value="${listName}">${listName}</label>
+                    <label style="margin-right: 8px"><input type="checkbox" name="selected-lists" value="${listName}">${listName}</label>
                 `);
             }
             $('#movie-info2').html(`
