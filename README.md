@@ -54,7 +54,11 @@ The movie recommendation page has similar layout with movie visulalization searc
 
 The application uses mongodb for database, the data of the db is stroed in dictionary type. For server, the application uses spring boot framework. When users press certain buttons, then the HTTP request is sent into the server. The server will evaluate and perform actions by java files, such as manipulation of data, finding search results... Then it will send the result by HTTP response. The web page will do actions like displaying visualized reviews, displaying bookmarks or movies when they received HTTP response.
 
-## 4. How to use
+## 4. Page Structure
+
+<img src="~@source/Image/Signup.png"></img>
+
+## 5. How to use
 
 ### 1. Creating an Account
 
