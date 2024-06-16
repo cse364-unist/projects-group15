@@ -22,7 +22,7 @@ This feature recommends movies to users. We applied the simple algorithm. The al
 
 ## 3. How does it work
 
-<img src="./Structure.jpg"/>
+<img src="./Image/Structure.jpg"/>
 
 ### Web Page
 
