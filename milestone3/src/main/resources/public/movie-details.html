@@ -5,15 +5,65 @@
     <title>Movie Details</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="movie-details.js"></script>
     <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+
         .chart-container {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
         .chart {
             width: 48%;
+            height: 550px;
+        }
+
+        .tooltip {
+            background-color: #16a085;
+            color: white;
+            border-radius: 8px;
+            padding: 5px;
+            opacity: 0.9;
+        }
+
+        label {
+            display: block;
+            margin: 5px 0;
+        }
+
+        select, input[type="checkbox"] {
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -23,8 +73,7 @@
     </div>
     <button id="rating-button">Submit</button>
     <h3>Select bookmarks to add</h3>
-    <div id="selected-list-options">
-    </div>
+    <div id="selected-list-options"></div>
     <button id="add-button">Add</button>
     <div id="movie-info2">
     </div>

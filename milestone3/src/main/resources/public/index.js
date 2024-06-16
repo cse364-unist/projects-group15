@@ -5,25 +5,25 @@ $(document).ready(function() {
 
         switch (category) {
             case 'Season':
-                $('#recommendation_h2').html('<h2>Recommendation by Season</h2>');
+                $('#recommendation_h2').html('<h2 style="font-size: 1.75rem; color: #333; margin: 20px 0;">Recommendation by Season</h2>');
                 queryParams = {
                     month: currentMonth
                 }
                 break;
             case 'Time':
-                $('#recommendation_h2').html('<h2>Recommendation by time</h2>');
+                $('#recommendation_h2').html('<h2 style="font-size: 1.75rem; color: #333; margin: 20px 0;">Recommendation by time</h2>');
                 queryParams = {
                     hour: currentTime
                 }
                 break;
             case 'MovieId':
-                $('#recommendation_h2').html('<h2>Recommendation by a Movie in your bookmarks</h2>');
+                $('#recommendation_h2').html('<h2 style="font-size: 1.75rem; color: #333; margin: 20px 0;">Recommendation by a Movie in your bookmarks</h2>');
                 queryParams = {
                     movieId: MovieId
                 }
                 break;
             case 'Info':
-                $('#recommendation_h2').html('<h2>Recommendation by your information</h2>');
+                $('#recommendation_h2').html('<h2 style="font-size: 1.75rem; color: #333; margin: 20px 0;">Recommendation by your information</h2>');
                 queryParams = {
                     userId: userId
                 }
@@ -113,6 +113,11 @@ $(document).ready(function() {
         });
     }
 
+    function logout() {
+        removeItem('userId');
+        window.location.href = 'login.html';
+    }
+
     const now = new Date();
     const currentMonth = now.getMonth() + 1
     const currentTime = now.getHours()
@@ -149,6 +154,7 @@ $(document).ready(function() {
     });
 
     // Handle search and submission
+    $('#logout').click(logout);
     $('#search-button').click(performSearch);
 });
 

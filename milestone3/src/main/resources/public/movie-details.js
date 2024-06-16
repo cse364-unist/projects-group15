@@ -214,7 +214,7 @@ $(document).ready(function() {
                 <h1>${movie.movieName}</h1>
                 <p>${movie.movieGenre}</p>
                 <div id="currentRating"></div>
-                <label for="rating">New Rating:</label>
+                <label for="rating">New Rating</label>
                 <select id="rating">
                     <option value="1">1</option>
                     <option value="2">2</option>
