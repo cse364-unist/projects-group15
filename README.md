@@ -56,7 +56,7 @@ The application uses mongodb for database, the data of the db is stroed in dicti
 
 ## 4. Page Structure
 
-<img src="./Image/Signup.png/>
+<img src="./Image/Signup.png"/>
 
 ## 5. How to use
 
