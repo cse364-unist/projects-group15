@@ -308,3 +308,11 @@ $(document).ready(function() {
         }
     });
 });
+
+function logout() {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userMovieList');
+    window.location.href = 'login.html';
+}
+
+$('#logout').click(logout);

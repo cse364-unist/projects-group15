@@ -107,4 +107,12 @@ function navigateToDetails(movieId) {
     window.location.href = url;
 }
 
+function logout() {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userMovieList');
+    window.location.href = 'login.html';
+}
+
 display()
+
+$('#logout').click(logout);
