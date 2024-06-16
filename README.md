@@ -72,7 +72,7 @@ They can make an account in sign up page, there are forms of entering username, 
 
 ### 3. Main page
 
-<img src="./Image/MainPage.png">
+<img src="./Image/Main.png">
 
 There is serach section and filtering section, and result section. In the search section, there is textbox which keywords are written and search button to search. Below the search section, there is a filtering section. Users can filter the genres by clicking checkbox. Below the filtering section, there is a movie list section which search results will be displayed. Below the movie list section, there is a recommendation section which movies are recommended.  
 In the upper bar, there is title, user info, bookmark tab and logout button. title tab is linked with title screen, user into tab makes users to go to user information page, and bookmark tab makes uers go to the bookmark page. When user press the log out button they can log out.
