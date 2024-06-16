@@ -22,6 +22,8 @@ This feature recommends movies to users. We applied the simple algorithm. The al
 
 ## 3. How does it work
 
+<img src="./Image/Structure.jpg"/>
+
 ### Web Page
 
 Actions in the web page will be done by two conditions, receiving HTTP response, and pressing some of the buttons.
@@ -54,4 +56,85 @@ The movie recommendation page has similar layout with movie visulalization searc
 
 The application uses mongodb for database, the data of the db is stroed in dictionary type. For server, the application uses spring boot framework. When users press certain buttons, then the HTTP request is sent into the server. The server will evaluate and perform actions by java files, such as manipulation of data, finding search results... Then it will send the result by HTTP response. The web page will do actions like displaying visualized reviews, displaying bookmarks or movies when they received HTTP response.
 
-## 4. How to use
+## 4. Page Structure
+
+### 1. Log in page
+
+<img src="./Image/Login.png"/>
+
+There is ID and password textbox. When users have an account, then they can enter ID, password and press the Log in button. When users don't have an account, then they can make an account by pressing sign up button.
+
+### 2. Sign up page
+
+<img src="./Image/Signup.png"/>
+
+They can make an account in sign up page, there are forms of entering username, ID, password. Gender and occupation can be filled by select form. Age can we written in both number or up, down button.
+
+### 3. Main page
+
+<img src="./Image/Main.png">
+
+There is serach section and filtering section, and result section. In the search section, there is textbox which keywords are written and search button to search. Below the search section, there is a filtering section. Users can filter the genres by clicking checkbox. Below the filtering section, there is a movie list section which search results will be displayed. Below the movie list section, there is a recommendation section which movies are recommended.  
+In the upper bar, there is title, user info, bookmark tab and logout button. title tab is linked with title screen, user into tab makes users to go to user information page, and bookmark tab makes uers go to the bookmark page. When user press the log out button they can log out.
+
+### 4. Movie info page
+
+<img src="./Image/MovieInfo.png"/>
+
+When users click one of the search results, then users can go to movie information page. The upmost button is back button which makes users go to back (title) screen. The review data is visualized on the top of the screen. Below that, there is review section which users can make review. Below the review section, there is a adding to bookmark section, which users can add that movie to the bookmark.
+
+### 5. User info page
+
+<img src="./Image/UserInfo.png"/>
+
+User info page is similar to sign up page. Users can change their information inside the page. When users edit information and press the Submit button, then the user information will be changed.
+
+### 6. Bookmark page
+
+<img src="./Image/Bookmark.png"/>
+
+In the bookmark page users can add/delete the bookmark. Users can press + button to make a bookmark. Users can press - button next to the name of the bookmark title to delete the bookmark. Users can add movies by pressing + button inside the bookmark block, users can delete the movie by pressing - button next to the movie title.
+
+## 5. How to use
+
+### 1. Creating an Account
+
+1. Go to sign up page.
+2. Enter username, age, gender, occupation, password and password confirm.
+3. Press the sign up button.
+
+### 2. Log in
+
+1. Go to log in page.
+2. Enter username and password.
+3. Press the log in button.
+
+### 3. Changing user information
+
+1. Go to user info page.
+2. Fill the form to change information.
+3. Press the submit button.
+
+### 4. Viewing review data
+
+1. In the main page, there is a textbox and search button.
+2. Enter the keyword in text button.
+3. Press the search button.
+4. Advanced options : There are filters below the search textbox and the button. Users can check the checkbox to filter the movies by genres
+5. The searched movies will be appeared.
+6. Recommended movies will bo appeared below the searched movies.
+
+### 5. Bookmark page.
+
+1. Press + button to add the bookmark.
+2. The new bookmark block will be appeared.
+3. Press + button inside the block to add the movie.
+4. Press - button next to the title of the movie to delete the movie.
+5. Press - button next to the title of the bookmark to delete the bookmark.
+
+### 6. Movie Details
+
+1. The details of the movies are viewed.
+2. Users can view the bar or pie chart of the reviews.
+3. There is the review writing section and submit button. users can submit the reviews.
+4. There is adding to bookmark button below the review submit section, users can add the movie into the bookmark.
