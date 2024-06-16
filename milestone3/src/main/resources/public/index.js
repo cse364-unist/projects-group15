@@ -135,12 +135,12 @@ $(document).ready(function() {
 
     for (let listName in userMovieList) {
         $('#selected-list-options').append(`
-            <label style="margin-right: 8px"><input type="checkbox" name="selected-lists" value="${listName}">${listName}</label><br>
+            <label style="margin-right: 8px"><input type="checkbox" name="selected-lists" value="${listName}">${listName}</label>
         `);
     }
     for (let listName in userMovieList) {
         $('#filtered-list-options').append(`
-            <label style="margin-right: 8px"><input type="checkbox" name="filtered-lists" value="${listName}">${listName}</label><br>
+            <label style="margin-right: 8px"><input type="checkbox" name="filtered-lists" value="${listName}">${listName}</label>
         `);
     }
 
