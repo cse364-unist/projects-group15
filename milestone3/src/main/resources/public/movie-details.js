@@ -135,9 +135,103 @@ $(document).ready(function() {
                     });
             }
 
-            $('#movie-info').html(`
+            function submitRating() {
+                const rating = $('#rating').val();
+                const queryParams = {
+                    rating: rating,
+                    userId: localStorage.getItem("userId"),
+                    movieId: movie.movieId
+                };
+                $.ajax({
+                    url: 'http://localhost:8080/cse364-project/updateRating',
+                    type: 'PUT',
+                    data: queryParams,
+                    dataType: 'json',
+                    success: function(response) {
+                        getCurrentRating();
+                    },
+                    error: function() {
+                        $.ajax({
+                            url: 'http://localhost:8080/cse364-project/addNewRating',
+                            type: 'POST',
+                            data: queryParams,
+                            dataType: 'json',
+                            success: function(response) {
+                                getCurrentRating();
+                            },
+                            error: function() {
+                                $('#ratingResult').html('<p>Unexpected Error.</p>');
+                            }
+                        });
+                    }
+                });
+            }
+
+            function getCurrentRating() {
+                const rating = $('#rating').val();
+                const queryParams = {
+                    userId: localStorage.getItem("userId"),
+                    movieId: movie.movieId
+                };
+                $.ajax({
+                    url: 'http://localhost:8080/cse364-project/getRating',
+                    type: 'GET',
+                    data: queryParams,
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#currentRating').html(`<p>Your Rating: ${response.rating}</p>`);
+                    },
+                    error: function() {
+                        $('#currentRating').html(`<p>Your Rating: No rating.</p>`);
+                    }
+                });
+            }
+
+            function performAdd() {
+                const selectedLists = $('input[name="selected-lists"]:checked').get().join('|');
+                for (let selectedListName in selectedLists) {
+                    queryParams = {
+                        element: queryParams.get('id'),
+                        userId: localStorage.getItem("userId"),
+                        listname: selectedListName
+                    }
+                    $.ajax({
+                        url: 'http://localhost:8080/cse364-project/addElementToMovieList',
+                        type: 'PUT',
+                        data: queryParams,
+                        dataType: 'json',
+                        success: function() {
+                            alert("Added successfully");
+                        },
+                        error: function() {
+                            alert("Unexpected error");
+                        }
+                    });
+                }
+            }
+
+            $('#movie-info1').html(`
                 <h1>${movie.movieName}</h1>
                 <p>${movie.movieGenre}</p>
+                <div id="currentRating"></div>
+                <label for="rating">New Rating:</label>
+                <select id="rating">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            `);
+            $('#rating-button').click(submitRating);
+            const userMovieList = JSON.parse(localStorage.getItem("userMovieList"))
+            for (let listName in userMovieList) {
+                $('#selected-list-options').append(`
+                    <label><input type="checkbox" name="selected-lists" value="${listName}">${listName}</label><br>
+                `);
+            }
+            $('#movie-info2').html(`
+                <div id="ratingResult"></div>
                 <h2>Gender Distribution</h2>
                 <div class="chart-container">
                     <div class="chart" id="genderPieChart"></div>
@@ -154,6 +248,8 @@ $(document).ready(function() {
                     <div class="chart" id="occupationBarChart"></div>
                 </div>
             `);
+
+            getCurrentRating();
 
             const genderData = [
                 {label: "Male", value: movie.genderRatio[0]},
@@ -199,6 +295,8 @@ $(document).ready(function() {
             }));
             drawPieChart(occupationData, "#occupationPieChart");
             drawBarChart(occupationData, "#occupationBarChart");
+
+            $('#add-button').click(performAdd);
         },
         error: function() {
             $('#movie-info').html('<p>Failed to bring in the movie.</p>');

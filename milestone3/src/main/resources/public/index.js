@@ -5,21 +5,25 @@ $(document).ready(function() {
 
         switch (category) {
             case 'Season':
+                $('#recommendation_h2').html('<h2>Recommendation by Season</h2>');
                 queryParams = {
                     month: currentMonth
                 }
                 break;
             case 'Time':
+                $('#recommendation_h2').html('<h2>Recommendation by time</h2>');
                 queryParams = {
                     hour: currentTime
                 }
                 break;
             case 'MovieId':
+                $('#recommendation_h2').html('<h2>Recommendation by a Movie in your bookmarks</h2>');
                 queryParams = {
                     movieId: MovieId
                 }
                 break;
             case 'Info':
+                $('#recommendation_h2').html('<h2>Recommendation by your information</h2>');
                 queryParams = {
                     userId: userId
                 }
@@ -71,11 +75,20 @@ $(document).ready(function() {
         var queryParams = {
             userId: localStorage.getItem("userId"),
             line: $('#search-bar').val(),
-            containingLists: $('input[name="selected-lists"]:checked').map(function() { return this.value; }).get(),
-            containingGenres: $('input[name="selected-genres"]:checked').map(function() { return this.value; }).get(),
-            filteringLists: $('input[name="filtered-lists"]:checked').map(function() { return this.value; }).get(),
-            filteringGenres: $('input[name="filtered-genres"]:checked').map(function() { return this.value; }).get()
+            containingLists: $('input[name="selected-lists"]:checked').map(function() {
+                return this.value.toLowerCase();
+            }).get().join('|'),
+            containingGenres: $('input[name="selected-genres"]:checked').map(function() {
+                return this.value.toLowerCase();
+            }).get().join('|'),
+            filteringLists: $('input[name="filtered-lists"]:checked').map(function() {
+                return this.value.toLowerCase();
+            }).get().join('|'),
+            filteringGenres: $('input[name="filtered-genres"]:checked').map(function() {
+                return this.value.toLowerCase();
+            }).get().join('|')
         };
+
         $.ajax({
             url: 'http://localhost:8080/cse364-project/getSearching',
             type: 'GET',
@@ -86,8 +99,8 @@ $(document).ready(function() {
                 movies.forEach((movie, index) => {
                     if (index < 20) {
                         content += `<div class="search-item" style="flex-basis: 20%; padding: 10px; box-sizing: border-box;">
-                                <h4>${movie.title}</h4>
-                                <p>${movie.genre}</p>
+                                <h4>${movie.movie.title}</h4>
+                                <p>${movie.movie.genre}</p>
                                 <a href="movie-details.html?id=${movie.movieId}">Details</a>
                             </div>`;
                     }

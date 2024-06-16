@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class getMovieDTO {
+    private String movieId;
     private String movieName;
     private String movieGenre;
     private Double averageRating;

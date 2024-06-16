@@ -49,6 +49,7 @@ public class Controller {
 
             String movieName = movie.getTitle();
             String movieGenre = movie.getGenre();
+            ret.setMovieId(movieId);
             ret.setMovieName(movieName);
             ret.setMovieGenre(movieGenre);
 
@@ -126,15 +127,19 @@ public class Controller {
         else
             return movieRepository.save(movie);
     }
-    @PostMapping("/ratings")
-    public Rating addNewRating(@RequestParam Rating rating) {
-        if (rating.getRating() >= 1 && rating.getRating() <= 5) {
-            if (ratingDAL.checkUserIdAndMovieIdExist(rating.getUserId(), rating.getMovieId()) ||
-                    !userDAL.checkUserIdExists(rating.getUserId()) ||
-                    !movieDAL.checkMovieIdExists(rating.getMovieId()))
+    @PostMapping("/addNewRating")
+    public Rating addNewRating(@RequestParam String rating, @RequestParam String userId, @RequestParam String movieId) {
+        Instant now = Instant.now();
+        long unixTimestamp = now.getEpochSecond();
+        String timestampString = String.valueOf(unixTimestamp);
+        Rating ratingInstance = new Rating(userId, movieId, Double.parseDouble(rating), timestampString);
+        if (ratingInstance.getRating() >= 1 && ratingInstance.getRating() <= 5) {
+            if (ratingDAL.checkUserIdAndMovieIdExist(ratingInstance.getUserId(), ratingInstance.getMovieId()) ||
+                    !userDAL.checkUserIdExists(ratingInstance.getUserId()) ||
+                    !movieDAL.checkMovieIdExists(ratingInstance.getMovieId()))
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid id");
             else
-                return ratingRepository.save(rating);
+                return ratingRepository.save(ratingInstance);
         }
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid rating range");
@@ -486,8 +491,7 @@ public class Controller {
                         Set<String> movieGenres = new HashSet<>(Arrays.asList(
                                 movieRepository.findById(e.getKey()).get().getGenre().toLowerCase().split("\\|")
                         ));
-                        movieGenres.removeAll(myFilter.getFilteringGenres());
-                        return !movieGenres.isEmpty();
+                        return Collections.disjoint(myFilter.getFilteringGenres(), movieGenres);
                     }
                 })
                 .filter(e -> myFilter.getContainingLists() == null || containingIds.contains(e.getKey()))
