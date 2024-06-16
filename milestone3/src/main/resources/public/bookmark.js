@@ -1,6 +1,5 @@
 let bookmarkCount = 1;
 
-// Function to add a new bookmark card
 function addBookmarkCard() {
     const bookmarkName = prompt('Enter the name of the bookmark:');
     if (bookmarkName) {
@@ -23,7 +22,6 @@ function addBookmarkCard() {
     }
 }
 
-// Function to confirm removal of a bookmark card
 function confirmRemoveBookmark(removeIcon) {
     const confirmation = confirm("Are you sure you want to remove this bookmark?");
     if (confirmation) {
@@ -31,13 +29,11 @@ function confirmRemoveBookmark(removeIcon) {
     }
 }
 
-// Function to remove a bookmark card
 function removeBookmark(removeIcon) {
     const card = removeIcon.closest('.bookmark-card');
     card.parentNode.removeChild(card);
 }
 
-// Function to confirm removal of a movie from a bookmark card
 function confirmRemoveMovie(removeMovieIcon) {
     const confirmation = confirm("Are you sure you want to remove this movie?");
     if (confirmation) {
@@ -45,13 +41,11 @@ function confirmRemoveMovie(removeMovieIcon) {
     }
 }
 
-// Function to remove a movie from a bookmark card
 function removeMovie(removeMovieIcon) {
     const movie = removeMovieIcon.closest('.movie-title');
     movie.parentNode.removeChild(movie);
 }
 
-// Function to add a movie to a bookmark card
 function addMovie(addMovieButton) {
     const movieTitle = prompt('Enter the movie title:');
     if (movieTitle) {
@@ -64,7 +58,6 @@ function addMovie(addMovieButton) {
     }
 }
 
-// Function to navigate to movie-details.html with movie name as a parameter
 function navigateToDetails(movieTitle) {
     const url = new URL('movie-details.html', window.location.origin);
     url.searchParams.append('title', movieTitle);
