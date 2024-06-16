@@ -383,7 +383,7 @@ public class Controller {
 
     // Setting movie list
     @PutMapping("/addMovieList")
-    public User addMovieList(@RequestBody String listname, @PathVariable String userId) {
+    public User addMovieList(@RequestParam String listname, @RequestParam String userId) {
         if (userDAL.checkUserIdExists(userId)) {
             User updateUser = userRepository.findById(userId).get();
             HashMap<String, List<String>> updateList = updateUser.getMovieList();

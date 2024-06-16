@@ -187,28 +187,33 @@ $(document).ready(function() {
                 });
             }
 
-            function performAdd() {
-                const selectedLists = $('input[name="selected-lists"]:checked').get().join('|');
-                for (let selectedListName in selectedLists) {
-                    queryParams = {
-                        element: queryParams.get('id'),
-                        userId: localStorage.getItem("userId"),
+            async function performAdd() {
+                const userId = localStorage.getItem("userId");
+                const selectedLists = $('input[name="selected-lists"]:checked').map(function() { return this.value; }).get();
+                const elementId = queryParams.get('id');
+
+                for (let selectedListName of selectedLists) {
+                    var queryParams2 = {
+                        element: elementId,
+                        userId: userId,
                         listname: selectedListName
+                    };
+                    try {
+                        let result = await $.ajax({
+                            url: 'http://localhost:8080/cse364-project/addElementToMovieList',
+                            type: 'PUT',
+                            data: queryParams2,
+                            dataType: 'json'
+                        });
+                        localStorage.setItem('userMovieList', JSON.stringify(result.movieList));
+                    } catch (error) {
+                        console.error("Error adding item to " + selectedListName + ":", error);
+                        alert("An error occurred. Please try again.");
                     }
-                    $.ajax({
-                        url: 'http://localhost:8080/cse364-project/addElementToMovieList',
-                        type: 'PUT',
-                        data: queryParams,
-                        dataType: 'json',
-                        success: function() {
-                            alert("Added successfully");
-                        },
-                        error: function() {
-                            alert("Unexpected error");
-                        }
-                    });
                 }
+                alert("Item added successfully.");
             }
+
 
             $('#movie-info1').html(`
                 <h1>${movie.movieName}</h1>

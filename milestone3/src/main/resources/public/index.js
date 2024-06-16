@@ -5,7 +5,7 @@ $(document).ready(function() {
 
         switch (category) {
             case 'Season':
-                $('#recommendation_h2').html('<h2 style="font-size: 1.75rem; color: #333; margin: 20px 0;">Recommendation by Season</h2>');
+                $('#recommendation_h2').html('<h2 style="font-size: 1.75rem; color: #333; margin: 20px 0;">Recommendation by season</h2>');
                 queryParams = {
                     month: currentMonth
                 }
@@ -17,9 +17,9 @@ $(document).ready(function() {
                 }
                 break;
             case 'MovieId':
-                $('#recommendation_h2').html('<h2 style="font-size: 1.75rem; color: #333; margin: 20px 0;">Recommendation by a Movie in your bookmarks</h2>');
+                $('#recommendation_h2').html('<h2 style="font-size: 1.75rem; color: #333; margin: 20px 0;">Recommendation by a movie in your bookmarks</h2>');
                 queryParams = {
-                    movieId: MovieId
+                    movieId: randomMovieId
                 }
                 break;
             case 'Info':
@@ -101,7 +101,7 @@ $(document).ready(function() {
                         content += `<div class="search-item" style="flex-basis: 20%; padding: 10px; box-sizing: border-box;">
                                 <h4>${movie.movie.title}</h4>
                                 <p>${movie.movie.genre}</p>
-                                <a href="movie-details.html?id=${movie.movieId}">Details</a>
+                                <a href="movie-details.html?id=${movie.movie.movieId}">Details</a>
                             </div>`;
                     }
                 });
@@ -114,7 +114,8 @@ $(document).ready(function() {
     }
 
     function logout() {
-        removeItem('userId');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userMovieList');
         window.location.href = 'login.html';
     }
 
@@ -134,12 +135,12 @@ $(document).ready(function() {
 
     for (let listName in userMovieList) {
         $('#selected-list-options').append(`
-            <label><input type="checkbox" name="selected-lists" value="${listName}">${listName}</label><br>
+            <label style="margin-right: 8px"><input type="checkbox" name="selected-lists" value="${listName}">${listName}</label><br>
         `);
     }
     for (let listName in userMovieList) {
         $('#filtered-list-options').append(`
-            <label><input type="checkbox" name="filtered-lists" value="${listName}">${listName}</label><br>
+            <label style="margin-right: 8px"><input type="checkbox" name="filtered-lists" value="${listName}">${listName}</label><br>
         `);
     }
 

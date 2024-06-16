@@ -46,7 +46,7 @@
         }
         .bookmark-container {
             display: flex;
-            flex-direction: row; 
+            flex-direction: column;
             align-items: center; 
             flex-wrap: nowrap; 
             width: auto; 
@@ -56,10 +56,10 @@
             border-radius: 5px;
             padding: 20px;
             background-color: #e9ecef;
-            width: 200px;
+            width: 80%;
             min-height: 100px; 
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             justify-content: space-between;
             align-items: center;
             margin: 10px; 
@@ -88,7 +88,8 @@
         }
         .bookmark-card .movie-title .remove-movie {
             margin-left: 10px;
-            font-size: 1rem;
+            margin-right: 30px;
+            font-size: 5rem;
             color: red;
             cursor: pointer;
         }
@@ -115,22 +116,29 @@
             justify-content: center;
             height: auto;
         }
+        #bookmarkContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 20px;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid logo-text">
-        <a class="navbar-brand" href="movie-details.html">Movie-Recommendation</a>
+        <a class="navbar-brand" href="index.html">Movie-Recommendation</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="movie-details.html">Home</a>
+                    <a class="nav-link" aria-current="page" href="index.html">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="bookmark.html">Bookmark</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="User.html">User information</a>
+                    <a class="nav-link" href="UserInfo.html">User information</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="login.html">Log In</a>
@@ -144,24 +152,9 @@
 </div>
 <div class="content-container">
     <div class="bookmark-container" id="bookmarkContainer">
-        <div class="bookmark-card" id="bookmark1">
-            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <h2>Bookmark1</h2>
-                <div class="remove-card" onclick="confirmRemoveBookmark(this)">-</div>
-            </div>
-            <div class="movie-title">
-                <a href="#" onclick="navigateToDetails('Movie1')">Movie1</a>
-                <div class="remove-movie" onclick="confirmRemoveMovie(this)">-</div>
-            </div>
-            <div class="add-movie" onclick="addMovie(this)">+</div>
-        </div>
         <div class="add-icon" onclick="addBookmarkCard()">+</div>
     </div>
 </div>
-
 <script src="bookmark.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

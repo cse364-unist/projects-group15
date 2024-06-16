@@ -1,65 +1,110 @@
-let bookmarkCount = 1;
+function display() {
+    const bookmarkContainer = document.getElementById('bookmarkContainer');
+    while (bookmarkContainer.firstChild && bookmarkContainer.children.length > 1) {
+        bookmarkContainer.removeChild(bookmarkContainer.firstChild);
+    }
+    const queryParams = {
+        userId: localStorage.getItem('userId')
+    };
+    $.ajax({
+        url: 'http://localhost:8080/cse364-project/getUser',
+        type: 'GET',
+        data: queryParams,
+        dataType: 'json',
+        success: function(response) {
+            localStorage.setItem('userMovieList', JSON.stringify(response.movieList));
+            Object.entries(response.movieList).forEach(([listName, movies]) => {
+                const newCard = document.createElement('div');
+                newCard.className = 'bookmark-card';
+                let moviesPromises = movies.map(movie => {
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: 'http://localhost:8080/cse364-project/getMovie',
+                            type: 'GET',
+                            data: { movieId: movie },
+                            dataType: 'json',
+                            success: function(movieDetails) {
+                                resolve(`
+                                    <div class="movie-title">
+                                        <a href="#" onclick="navigateToDetails('${movieDetails.movieId}')">${movieDetails.movieName}</a>
+                                        <div class="remove-movie" onclick="confirmRemoveMovie('${listName}', '${movies.indexOf(movie)}')">-</div>
+                                    </div>
+                                `);
+                            },
+                            error: reject
+                        });
+                    });
+                });
+
+                Promise.all(moviesPromises).then(moviesHTML => {
+                    newCard.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <h2>${listName}</h2>
+                            ${moviesHTML.join('')}
+                        </div>
+                    `;
+                    bookmarkContainer.insertBefore(newCard, bookmarkContainer.lastElementChild);
+                }).catch(() => {
+                    alert('Unexpected Error');
+                });
+            });
+        },
+        error: function() {
+            alert('Unexpected Error');
+        }
+    });
+}
 
 function addBookmarkCard() {
-    const bookmarkName = prompt('Enter the name of the bookmark:');
-    if (bookmarkName) {
-        bookmarkCount++;
-        const bookmarkContainer = document.getElementById('bookmarkContainer');
-        const newCard = document.createElement('div');
-        newCard.className = 'bookmark-card';
-        newCard.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <h2>${bookmarkName}</h2>
-                <div class="remove-card" onclick="confirmRemoveBookmark(this)">-</div>
-            </div>
-            <div class="movie-title">
-                <a href="#" onclick="navigateToDetails('Movie${bookmarkCount}')">Movie${bookmarkCount}</a>
-                <div class="remove-movie" onclick="confirmRemoveMovie(this)">-</div>
-            </div>
-            <div class="add-movie" onclick="addMovie(this)">+</div>
-        `;
-        bookmarkContainer.insertBefore(newCard, bookmarkContainer.lastElementChild);
+    const bookmarkName = prompt('Enter bookmark name:');
+    var queryParams = {
+        listname: bookmarkName,
+        userId: localStorage.getItem('userId')
     }
+    $.ajax({
+        url: 'http://localhost:8080/cse364-project/addMovieList',
+        type: 'PUT',
+        data: queryParams,
+        dataType: 'json',
+        success: function(response) {
+            display()
+        },
+        error: function(error) {
+            alert('Unexpected Error');
+        }
+    });
 }
 
-function confirmRemoveBookmark(removeIcon) {
-    const confirmation = confirm("Are you sure you want to remove this bookmark?");
+function confirmRemoveMovie(name, index) {
+    const confirmation = confirm("Do you want to remove this movie?");
     if (confirmation) {
-        removeBookmark(removeIcon);
+        removeMovie(name, index);
     }
 }
 
-function removeBookmark(removeIcon) {
-    const card = removeIcon.closest('.bookmark-card');
-    card.parentNode.removeChild(card);
-}
-
-function confirmRemoveMovie(removeMovieIcon) {
-    const confirmation = confirm("Are you sure you want to remove this movie?");
-    if (confirmation) {
-        removeMovie(removeMovieIcon);
+function removeMovie(name, index) {
+    const queryParams = {
+        userId: localStorage.getItem('userId'),
+        listname: name,
+        index: index
     }
+    $.ajax({
+        url: 'http://localhost:8080/cse364-project/removeElementFromMovieList',
+        type: 'PUT',
+        data: queryParams,
+        dataType: 'json',
+        success: function(response) {
+            display()
+        },
+        error: function(error) {
+            alert('Unexpected Error');
+        }
+    });
 }
 
-function removeMovie(removeMovieIcon) {
-    const movie = removeMovieIcon.closest('.movie-title');
-    movie.parentNode.removeChild(movie);
+function navigateToDetails(movieId) {
+    const url = 'movie-details.html?id=' + movieId
+    window.location.href = url;
 }
 
-function addMovie(addMovieButton) {
-    const movieTitle = prompt('Enter the movie title:');
-    if (movieTitle) {
-        const movieElement = document.createElement('div');
-        movieElement.className = 'movie-title';
-        movieElement.innerHTML = `
-            <a href="#" onclick="navigateToDetails('${movieTitle}')">${movieTitle}</a>
-            <div class="remove-movie" onclick="confirmRemoveMovie(this)">-</div>`;
-        addMovieButton.parentNode.insertBefore(movieElement, addMovieButton);
-    }
-}
-
-function navigateToDetails(movieTitle) {
-    const url = new URL('movie-details.html', window.location.origin);
-    url.searchParams.append('title', movieTitle);
-    window.location.href = url.toString();
-}
+display()
