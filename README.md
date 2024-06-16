@@ -56,7 +56,7 @@ The application uses mongodb for database, the data of the db is stroed in dicti
 
 ## 4. Page Structure
 
-<img src="https://github.com/cse364-unist/projects-group15/tree/milestone3/Image/Signup.png"></img>
+![alt text]("https://github.com/cse364-unist/projects-group15/tree/milestone3/Image/Signup.png")
 
 ## 5. How to use
 
